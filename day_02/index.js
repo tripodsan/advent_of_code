@@ -17,7 +17,7 @@ function run(code) {
       case 99:
         return code[0];
       default:
-        throw Error('illegal opcode');
+        throw Error('illegal opcode: ' + code[i]);
     }
   }
 }
