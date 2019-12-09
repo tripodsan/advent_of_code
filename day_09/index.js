@@ -5,7 +5,7 @@ const data = fs.readFileSync('./input.txt', 'utf-8')
   .split(',')
   .map((s)=>Number.parseInt(s));
 
-
+// const data = [109,1,204,-1,1001,100,1,100,1008,100,16,101,1006,101,0,99];
 class Program {
   constructor(code, input = []) {
     this.code = code;
@@ -45,9 +45,9 @@ class Program {
     const lda = (a) => {
       const p = code[this.pc + 1 + a];
       switch (m[a]) {
-        case 0: return code[p];
+        case 0: return code[p] || 0;
         case 1: return p;
-        case 2: return code[p + this.relBase];
+        case 2: return code[p + this.relBase] || 0;
       }
       throw Error('illegal parameter mode: ' + m[a]);
     };
