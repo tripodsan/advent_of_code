@@ -180,8 +180,6 @@ function puzzle2() {
     const d = p0.y - p1.y;
     return d === 0 ? p0.x - p1.x : d;
   });
-  console.log(hull);
-
   let x = xMin;
   let y = hull[0].y;
   console.log('result 2:');
