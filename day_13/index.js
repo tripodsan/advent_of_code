@@ -151,6 +151,9 @@ function render() {
 
 function puzzle2() {
   const prog = new Program(Array.from(data));
+
+  const headless = true;
+
   // insert coin :-)
   prog.code[0] = 2;
 
@@ -175,14 +178,24 @@ function puzzle2() {
       }
     }
     prog.input.push(Math.sign(ball - pad));
-    process.stdout.write('\u001b[2J\u001b[0;0H');
-    render();
-    process.stdout.write(`\n\nSCORE: ${score}\n`);
-    if (prog.isRunning) {
-      setTimeout(run, 10);
+    if (!headless) {
+      process.stdout.write('\u001b[2J\u001b[0;0H');
+      render();
+      process.stdout.write(`\n\nSCORE: ${score}\n`);
+      if (prog.isRunning) {
+        setTimeout(run, 10);
+      }
     }
   };
-  run();
+  if (headless) {
+    console.log('\nSimulating game...');
+    while (prog.isRunning) {
+      run();
+    }
+  } else {
+    run();
+  }
+  console.log('Result 2: Score ', score);
 }
 
 function puzzle1() {
@@ -201,8 +214,8 @@ function puzzle1() {
     }
   }
   render();
-  console.log('Result 1:', numBlocks);
+  console.log('Result 1:', numBlocks, 'blocks');
 }
 
-// puzzle1();
+puzzle1();
 puzzle2();
