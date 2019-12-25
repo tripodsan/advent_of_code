@@ -1,0 +1,58 @@
+
+
+
+
+
+      l
+      |
+  r-t-p
+  | | |
+  | . h
+  |
+  | e   N
+  | |   |
+  k-x-c-o-n
+  |   |
+  H w-a-g-s-C
+            |
+            ?
+
+
+c = crew quarters,  festive hat
+o = observatory, food ration
+n = engineering, spool of cat 6
+N = navigation
+a = arcade, infinite loop
+g = gift wrapping station
+s = sick bay, fuel cell
+C = security checkpoint,
+w = warp drive, escape pod
+k = kitchen, hologram
+r = stables, space heater
+t = storage, space law space brochure
+p = passages, tambourine
+l = science lab
+h = holodeck
+H = hallway, molten lave
+
+'festive hat', 'e'
+'food ration', 'ee'
+'spool of cat 6', 'eee',
+'fuel cell', 'esee',
+'hologram', 'w',
+'space heater', 'wn',
+'space law space brochure', 'wne',
+'tambourine', 'wnee',
+
+checkpoint: 'eseee'
+
+----------------------------
+- fuel cell
+- festive hat
+- tambourine
+- food ration
+
++ hologram
++ space law space brochure
++ spool of cat6
++ space heater
