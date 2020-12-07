@@ -4,45 +4,65 @@ const fs = require('fs');
 const data = fs.readFileSync('./input.txt', 'utf-8')
   .split('\n')
   .map((s)=> s.trim())
-  .map((s)=> s.split(''))
+  .filter((s) => !!s)
+  .map((s) => s.split(/[\s,.]+/g));
 
-data.push([]);
+/*
+light red bags contain 1 bright white bag, 2 muted yellow bags.
+dark orange bags contain 3 bright white bags, 4 muted yellow bags.
+bright white bags contain 1 shiny gold bag.
+muted yellow bags contain 2 shiny gold bags, 9 faded blue bags.
+shiny gold bags contain 1 dark olive bag, 2 vibrant plum bags.
+dark olive bags contain 3 faded blue bags, 4 dotted black bags.
+vibrant plum bags contain 5 faded blue bags, 6 dotted black bags.
+faded blue bags contain no other bags.
+dotted black bags contain no other bags.
+ */
 
-function process(validate) {
-  let wasEmpty = true;
-  let sum = 0;
-  let check = {};
-  let numPersons = 0;
-  for (let line of data) {
-    if (line.length === 0) {
-      if (!wasEmpty) {
-        const num = validate
-          ? Object.entries(check).filter(([k,v]) => (v === numPersons)).length
-          : Object.entries(check).length;
-        sum += num;
-      }
-      wasEmpty = true;
-    } else {
-      if (wasEmpty) {
-        check = {};
-        numPersons = 0;
-        wasEmpty = false;
-      }
-      line.forEach((q) => {
-        check[q] = q in check ? check[q] + 1 : 1;
-      });
-      numPersons++;
+const rules = { };
+
+// parse data and update rules
+data.forEach((r) => {
+  const bag = `${r[0]} ${r[1]}`;
+  const sr = {};
+  rules[bag] = sr;
+  if (r[4] !== 'no') {
+    for (let i = 4; i < r.length - 1; i += 4) {
+      const num = Number(r[i]);
+      const sb = `${r[i + 1]} ${r[i + 2]}`
+      sr[sb] = num;
+    }
+  }
+})
+
+// console.log(rules);
+
+function trail(bag, valid = {}) {
+  for (let [name, rule] of Object.entries(rules)) {
+    if (rule[bag]) {
+      valid[name] = true;
+      trail(name, valid);
+    }
+  }
+  return valid;
+}
+
+function numbags(bag) {
+  let sum = 1;
+  for (let [name, rule] of Object.entries(rules[bag])) {
+    if (rule) {
+      sum += rule * numbags(name);
     }
   }
   return sum;
 }
 
 function puzzle2() {
-  return process(true);
+  return numbags('shiny gold') - 1;
 }
 
 function puzzle1() {
-  return process();
+  return Object.values(trail('shiny gold')).length;
 }
 
 console.log('puzzle 1: ', puzzle1());
