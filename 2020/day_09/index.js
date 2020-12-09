@@ -1,94 +1,55 @@
-
 const fs = require('fs');
 
 const data = fs.readFileSync('./input.txt', 'utf-8')
   .split('\n')
   .map((s)=> s.trim())
   .filter((s) => !!s)
-  .map((s) => s.split(/\s+/g))
-  .map((s) => [s[0], Number.parseInt(s[1])]);
+  .map((s) => Number.parseInt(s));
 
-
-/*
-nop +0
-acc +1
-jmp +4
-acc +3
-jmp -3
-acc -99
-acc +1
-jmp -4
-acc +6
- */
-
-// data.forEach((d) => console.log(d, typeof(d)))
-
-class RuntimeError extends Error {
-  constructor(msg, acc, pc) {
-    super(msg);
-    this.acc = acc;
-    this.pc = pc;
+function findSum(dat, sum, start, end) {
+  for (let i = start; i < end; i++) {
+    for (let j = i + 1; j < end; j++) {
+      if (dat[i] + dat[j] === sum) {
+        return true;
+      }
+    }
   }
+  return false;
 }
 
-function process(program) {
-  let acc = 0;
-  let pc = 0;
-  let visited = [];
-  while (pc < program.length) {
-    const [ opc, arg ] = program[pc];
-    if (visited[pc]) {
-      throw new RuntimeError(`Infinite loop! acc=${acc}, pc=${pc}`, acc, pc);
+function process(mod) {
+  let i = mod;
+  while (i < data.length) {
+    const n = data[i];
+    if (!findSum(data, n, i - mod, i)) {
+      return n;
     }
-    visited[pc] = true;
-    switch (opc) {
-      case 'acc': {
-        acc += arg;
-        pc++;
-        break;
-      }
-      case 'nop': {
-        pc++;
-        break;
-      }
-      case 'jmp': {
-        pc += arg;
-        break;
-      }
-      default:
-        throw new RuntimeError(`Illegal opcode! acc=${acc}, pc=${pc}, opc=${opc}`, acc, pc);
-    }
+    i++;
   }
-  return acc;
 }
 
 function puzzle2() {
-  let last = -1;
-  while (true) {
-    let found = false;
-    const p = data.map((s, idx) => {
-      if (!found && idx > last && (s[0] === 'nop' || s[0] === 'jmp')) {
-        found = true;
-        last = idx;
-        return [s[0] === 'jmp' ? 'nop': 'jmp', s[1]];
+  const sum = puzzle1();
+  for (let i = 0; i < data.length; i++) {
+    let total = data[i];
+    let min = data[i];
+    let max = data[i];
+    for (let j = i + 1; j < data.length; j++) {
+      total += data[j];
+      min = Math.min(min, data[j]);
+      max = Math.max(max, data[j]);
+      if (total === sum) {
+        return min + max;
       }
-      return [...s];
-    });
-    try {
-      return process(p);
-    } catch (e) {
-      // ignore
+      if (total > sum) {
+        break;
+      }
     }
   }
 }
 
 function puzzle1() {
-  try {
-    process(data);
-  } catch (e) {
-    console.log(e.message);
-    return e.acc;
-  }
+    return process(25);
 }
 
 console.log('puzzle 1: ', puzzle1());
