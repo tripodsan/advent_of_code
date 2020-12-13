@@ -13,7 +13,7 @@ const schedule = data[1]
   .filter((s) => s.length)
 
 schedule.sort((s0, s1) => s0[0] - s1[0]);
-console.log(ts, schedule);
+// console.log(ts, schedule);
 
 function puzzle2() {
   let t = 1n;
