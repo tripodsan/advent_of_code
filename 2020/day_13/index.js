@@ -1,24 +1,45 @@
 
 const fs = require('fs');
+const { kgv } = require('../utils.js');
 
-const data = fs.readFileSync('./input.txt', 'utf-8')
-  .split('\n')
+const data = fs.readFileSync('./input_test.txt', 'utf-8')
+  .split('\n');
+
+const ts = BigInt(Number.parseInt(data[0]));
+const schedule = data[1]
+  .split(',')
   .map((s)=> s.trim())
-  .filter((s) => !!s)
-  .map((s) => s.split(/\s+/g))
-  .map((s) => [s[0], Number.parseInt(s[1])]);
+  .map((s, idx) => s === 'x' ? [] : [BigInt(Number.parseInt(s)), BigInt(idx)])
+  .filter((s) => s.length)
 
-
-function run() {
-  return 42;
-}
+schedule.sort((s0, s1) => s0[0] - s1[0]);
+console.log(ts, schedule);
 
 function puzzle2() {
-  return run();
+  let t = 1n;
+  let s = 0n;
+  for (const [k,d] of schedule) {
+    let tt = s + d;
+    while (tt % k) {
+      tt += t;
+    }
+    s = tt - d;
+    t = kgv(t, k);
+    console.log(s, t, d);
+  }
+  return s;
 }
 
 function puzzle1() {
-  return run();
+  let t = ts;
+  while (true) {
+    for (let [s] of schedule) {
+      if (t % s === 0n) {
+        return (t - ts) * s;
+      }
+    }
+    t++;
+  }
 }
 
 console.log('puzzle 1: ', puzzle1());
