@@ -167,6 +167,47 @@ class PriorityQueue {
   }
 }
 
+function* counter(digits, mag) {
+  const base = digits.length;
+  const idx = new Array(mag).fill(0);
+  let overflow = false;
+  do {
+    yield idx.map((p) => digits[p]);
+    for (let i = 0; i < mag; i++) {
+      idx[i]++;
+      if (idx[i] === base) {
+        idx[i] = 0;
+        if (i === mag - 1) {
+          overflow = true;
+        }
+      } else {
+        break;
+      }
+    }
+  } while (!overflow);
+}
+
+function* rangedCounter(from, to) {
+  const mag = from.length;
+  const idx = [...from];
+  let overflow = false;
+  do {
+    yield idx;
+    for (let i = 0; i < mag; i++) {
+      idx[i]++;
+      if (idx[i] >= to[i]) {
+        idx[i] = from[i];
+        if (i === mag - 1) {
+          overflow = true;
+        }
+      } else {
+        break;
+      }
+    }
+  } while (!overflow);
+}
+
+
 module.exports = {
   permute,
   ggt,
@@ -176,4 +217,6 @@ module.exports = {
   egcd,
   modinv,
   PriorityQueue,
+  counter,
+  rangedCounter,
 }
