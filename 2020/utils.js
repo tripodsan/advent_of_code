@@ -207,6 +207,38 @@ function* rangedCounter(from, to) {
   } while (!overflow);
 }
 
+class Grid {
+  constructor(dim = 2) {
+    this._g = {};
+    this.min = new Array(dim).fill(Number.MAX_SAFE_INTEGER);
+    this.max = new Array(dim).fill(Number.MIN_SAFE_INTEGER);
+  }
+
+  key(v) {
+    return v.join(':');
+  }
+
+  put(v, data) {
+    const key = this.key(v);
+    for (let p = 0; p < v.length; p ++) {
+      this.min[p] = Math.min(this.min[p], v[p]);
+      this.max[p] = Math.max(this.max[p], v[p]);
+    }
+    return this._g[key] = {
+      v: [...v],
+      ...data,
+    };
+  }
+
+  get(v) {
+    return this._g[this.key(v)];
+  }
+
+  values() {
+    return Object.values(this._g);
+  }
+}
+
 
 module.exports = {
   permute,
@@ -219,4 +251,5 @@ module.exports = {
   PriorityQueue,
   counter,
   rangedCounter,
+  Grid,
 }
