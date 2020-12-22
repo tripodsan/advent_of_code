@@ -239,6 +239,37 @@ class Grid {
   }
 }
 
+Set.prototype.intersect = function(other) {
+  const ret = new Set();
+  for (let k of this) {
+    if (other.has(k)) {
+      ret.add(k);
+    }
+  }
+  return ret;
+}
+
+Set.prototype.diff = function(other) {
+  const ret = new Set();
+  for (let k of this) {
+    if (!other.has(k)) {
+      ret.add(k);
+    }
+  }
+  for (let k of other) {
+    if (!this.has(k)) {
+      ret.add(k);
+    }
+  }
+  return ret;
+}
+
+Set.prototype.first = function() {
+  if (this.size === 0) {
+    return undefined;
+  }
+  return this.keys().next().value;
+}
 
 module.exports = {
   permute,
