@@ -60,12 +60,12 @@ console.log(ing);
 console.log('\nrules');
 console.log(rules);
 console.log('\nalgs');
-console.log(algs);
+console.log(JSON.stringify(algs, null, 2));
 
 function intersect(a, b) {
   const ret = {};
   Object.keys(a).forEach((k) => {
-    if (b[a]) {
+    if (b[k]) {
       ret[k] = a[k];
     }
   });
@@ -87,61 +87,79 @@ function diff(a, b) {
   return ret;
 }
 
-function run() {
-  return 42;
-}
-
-function puzzle2() {
-  return run();
-}
-
 function puzzle1() {
-  Object.entries(algs).forEach(([name, alg]) => {
-    console.log(name);
-    // form all the ingredients, remove the ones that are in distinct rules, so they can't have that allergenes
-    // let all = new Set(Object.keys(ing));
-    // for (const rule of alg.rules) {
-    //   Object.keys(rule.ing).forEach((r) => all.delete(r));
-    // }
-    // console.log(all);
-    // detect the ones that might be in one rule but not in the others
-    let all = { };
-    if (alg.rules.length > 1) {
-      for (const rule of alg.rules) {
-        all = diff(all, rule.ing);
-      }
-    }
-    alg.all = all;
-    console.log(all);
-  });
-
   const oldRules = rules.map((rule) => ({
     ing: { ...rule.ing},
     alg: { ...rule.alg},
   }));
-  Object.entries(algs).forEach(([name, alg]) => {
-    // find if we can reduce
-    for (const rule of alg.rules) {
-      Object.keys(alg.all).forEach((k) => {
-        delete rule.ing[k];
-      });
+
+  // find a rule with only 1 allergen
+  const list = [];
+  while (rules.length) {
+    // sort rules my number of allergenes
+    rules.sort((r0, r1) => Object.keys(r0.alg).length - Object.keys(r1.alg).length);
+
+    const cands = {};
+    for (const rule of rules) {
+      const numAlgs = Object.keys(rule.alg).length;
+      if (numAlgs > 1) {
+        console.log(cands);
+        throw Error('not solvable');
+      }
+      const algName = Object.keys(rule.alg)[0];
+      if (cands[algName]) {
+        continue;
+      }
+      // find ingredient that appears in every list of this rule's allergene
+      console.log('searching', algName);
+      let same;
+      // hack for wompking
+      // if (algName === 'nuts') {
+      //   same = { 'mbdksj': true };
+      // }
+      // else
+        {
+        for (const algRule of algs[algName].rules) {
+          if (!same) {
+            same = algRule.ing;
+          } else {
+            same = intersect(same, algRule.ing);
+          }
+        }
+      }
+      // if only 1 ingredient, mark and remove
+      console.log(same);
+      cands[algName] = same;
+      if (Object.keys(same).length === 1) {
+        const ing = Object.keys(same)[0];
+        console.log('found', algName, ing);
+        list.push({
+          ing,
+          alg: algName,
+        });
+        // remove ingredient and alg
+        for (let i = 0; i < rules.length; i++) {
+          const r = rules[i];
+          delete r.ing[ing];
+          delete r.alg[algName];
+          if (Object.keys(r.alg).length === 0) {
+            // delete rule
+            rules.splice(i, 1);
+            i--;
+          }
+        }
+        // console.log('updated rules', rules);
+        break;
+      }
     }
-  });
-  console.log('\nnew rules');
-  console.log(rules);
-  // find the ones that can't have allgs
+  }
+  // find ingredients with no allegenes
   let all = new Set(Object.keys(ing));
-  rules.forEach((rule) => {
-    Object.keys(rule.ing).forEach((r) => all.delete(r));
+  list.forEach(({ ing }) => {
+    all.delete(ing);
   });
-  // remove the ones from the sole algs
-  Object.entries(algs).forEach(([name, alg]) => {
-    if (alg.rules.length === 1) {
-      Object.keys(alg.rules[0].ing).forEach((r) => all.delete(r));
-    }
-  });
-  console.log(all);
-  // count the occurences
+  // console.log(all);
+  // count the occurrences
   let occ = 0;
   oldRules.forEach((rule) => {
     Object.keys(rule.ing).forEach((r) => {
@@ -150,8 +168,11 @@ function puzzle1() {
       }
     });
   });
+  console.log('puzzle 1: ', occ); // 2826
+  list.sort((l0, l1) => l0.alg.localeCompare(l1.alg));
+  console.log('puzzle 2: ', list.map((l) => l.ing).join(','));
+
   return occ;
 }
 
-console.log('puzzle 1: ', puzzle1());
-console.log('puzzle 2: ', puzzle2());
+puzzle1();
