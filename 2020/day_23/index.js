@@ -104,6 +104,7 @@ function run_old2(cups, iter) {
   // console.log('cups', cups);
   return arr;
 }
+
 function dump(c) {
   let p = c;
   do {
