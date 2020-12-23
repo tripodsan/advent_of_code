@@ -137,9 +137,9 @@ function run(cups, iter) {
     }
   }
   for (let r = 0; r < iter; r++) {
-    if (r % 1000 === 0) {
-      console.log(r);
-    }
+    // if (r % 1000 === 0) {
+    //   console.log(r);
+    // }
     // dump(cur);
     // detach pick
     const p0 = cur.n;
@@ -185,7 +185,7 @@ function puzzle1() {
   const cups = run([...data], 100);
   let ret = '';
   let p = cups.n;
-  while(p !== cups) {
+  while (p !== cups) {
     ret += p.v;
     p = p.n;
   }
