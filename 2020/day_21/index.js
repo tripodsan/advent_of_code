@@ -8,14 +8,6 @@ const data = fs.readFileSync('./input.txt', 'utf-8')
   .filter((s) => !!s)
   .map((s) => s.split(/[ ,()]+/).filter((s) => !!s));
 
-/*
-mxmxvkd kfcds sqjhc nhms (contains dairy, fish)
-trh fvjkl sbzzf mxmxvkd (contains dairy)
-sqjhc fvjkl (contains soy)
-sqjhc mxmxvkd sbzzf (contains fish)
-
- */
-
 const ing = {}
 let algs = {};
 const rules = [];
