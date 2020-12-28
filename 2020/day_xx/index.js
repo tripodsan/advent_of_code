@@ -15,9 +15,9 @@ for (const line of data) {
     }
     sls.push(sl);
   } else {
-    let [,p0, p1] = line.match(/\((.+)\):\[(.+)]/);
-    p0 = p0.split(',').map((t) => t === 'True');
-    p1 = p1.split(',').map((t) => t === 'True' ? true : ( t === 'None' ? null : false));
+    let [,p0, p1] = line.match(/\((.+)\):\s*\[(.+)]/);
+    p0 = p0.split(',').map((s) => s.trim()).map((t) => t === 'True');
+    p1 = p1.split(',').map((s) => s.trim()).map((t) => t === 'True' ? true : ( t === 'None' ? null : false));
     sl.rules.push({
       islands: p0,
       stable: p1,
@@ -45,26 +45,30 @@ sls.forEach((sl, idx) => {
     // collapse cases
     // console.log(stableCases);
     // find 2 cases that only differ by true/false
-    for (let x = 0; x < stableCases.length; x++) {
-      for (let y = x + 1; y < stableCases.length; y++) {
-        let differ = -1;
-        let numDiffer = 0;
-        for (let j = 0; j < len; j++) {
-          if (stableCases[x][j] !== stableCases[y][j]) {
-            differ = j;
-            numDiffer++;
+    let prevLen = 0;
+    while (prevLen !== stableCases.length) {
+      prevLen = stableCases.length;
+      for (let x = 0; x < stableCases.length; x++) {
+        for (let y = x + 1; y < stableCases.length; y++) {
+          let differ = -1;
+          let numDiffer = 0;
+          for (let j = 0; j < len; j++) {
+            if (stableCases[x][j] !== stableCases[y][j]) {
+              differ = j;
+              numDiffer++;
+            }
           }
-        }
-        if (numDiffer === 1) {
-          stableCases[x][differ] = 'x';
-          // remove case 'y'
-          stableCases.splice(y, 1);
-          y--;
+          if (numDiffer === 1) {
+            stableCases[x][differ] = 'x';
+            // remove case 'y'
+            stableCases.splice(y, 1);
+            y--;
+          }
         }
       }
     }
-    // console.log('after reduce');
-    // console.log(stableCases);
+    console.log('after reduce');
+    console.log(stableCases);
     const or = [];
     for (const c of stableCases) {
       let and = [];
