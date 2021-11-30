@@ -31,7 +31,7 @@ sls.forEach((sl, idx) => {
   sl.output = new Array(len);
   // for all stable islands, check the conditions
   for (let i = 0; i < len; i++) {
-    // console.log('stable cases ', i);
+    // console.log('----------------- stable cases ', i);
     const stableCases = rules.filter((r) => r.stable[i] === true).map((s) => [...s.islands]);
 
     // // quick way out: if all combinations are covered -> always stable
@@ -67,14 +67,17 @@ sls.forEach((sl, idx) => {
         }
       }
     }
-    console.log('after reduce');
-    console.log(stableCases);
+    // console.log('after reduce');
+    // console.log(stableCases);
     const or = [];
     for (const c of stableCases) {
       let and = [];
       for (let j = 0; j < len; j++) {
         if (c[j] === true) {
           and.push(j + 1)
+        }
+        if (c[j] === false) {
+          and.push(`!${j + 1}`);
         }
       }
       if (and.length > 1) {
