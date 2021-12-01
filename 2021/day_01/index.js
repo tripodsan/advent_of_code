@@ -1,43 +1,39 @@
 
 const fs = require('fs');
-
+// 1567
 const data = fs.readFileSync('./input.txt', 'utf-8')
   .split('\n')
   .map((s)=> s.trim())
   .filter((s) => !!s)
-  .map((s) => {
-    const m = s.match(/(\d+)-(\d+)\s+(\w+):\s+(\w+)/);
-    return {
-      min: Number(m[1]),
-      max: Number(m[2]),
-      char: m[3],
-      pwd: m[4],
-    };
-  });
+  .map((s) => parseInt(s, 10));
 
-// console.log(data);
+
+function sliding(data, size) {
+  size--;
+  const w = [];
+  for (let i = 0; i < data.length; i++) {
+    const n = data[i];
+    for (let j = 0; j < size; j++) {
+      w[i - j] += n;
+    }
+    w.push(n);
+  }
+  w.splice(w.length - size, size);
+  return w;
+}
 
 function puzzle2() {
-  let ok = 0;
-  data.forEach((s) => {
-    const c1 = s.pwd[s.min - 1] === s.char;
-    const c2 = s.pwd[s.max - 1] === s.char;
-    if (c1 ^ c2) {
-      ok++;
-    }
-  })
-  return ok;
+  return sliding(data, 3)
+    .map((n, idx, a) => n - a[idx-1])
+    .filter((n) => n > 0)
+    .length;
 }
 
 function puzzle1() {
-  let ok = 0;
-  data.forEach((s) => {
-    const c = s.pwd.split('').filter((d) => d === s.char).length;
-    if (c >= s.min && c <= s.max) {
-      ok++;
-    }
-  })
-  return ok;
+  return data
+    .map((n, idx) => n - data[idx-1])
+    .filter((n) => n > 0)
+    .length;
 }
 
 console.log('puzzle 1: ', puzzle1());
