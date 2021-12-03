@@ -12,25 +12,17 @@ let data = fs.readFileSync('./input.txt', 'utf-8')
 const len = data[0].length;
 
 function countBits(data) {
-  const cnt = [
-    new Array(len).fill(0),
-    new Array(len).fill(0),
-  ];
+  const cnt = new Array(len).fill(0);
   for (const ns of data) {
     ns.forEach((b, idx) => {
-      cnt[b][idx]++;
+      cnt[idx] += b;
     });
   }
   const mcb = [];
   const lcb = [];
   for (let p = 0; p < len; p++) {
-    if (cnt[0][p] > cnt[1][p]) {
-      mcb[p]=0;
-      lcb[p]=1;
-    } else {
-      mcb[p]=1;
-      lcb[p]=0;
-    }
+    mcb[p] = Math.round(cnt[p] / data.length);
+    lcb[p] = 1 - mcb[p];
   }
   return [mcb, lcb];
 }
@@ -61,13 +53,9 @@ function puzzle2() {
 
 function puzzle1() {
   const [lcb, mcb] = countBits(data);
-  let gamma = 0;
-  let epsilon = 0;
-  for (let i = len - 1, p = 1; i >= 0; i--, p*=2) {
-    epsilon += p*mcb[i];
-    gamma += p*lcb[i];
-  }
-  return gamma * epsilon;
+  const gam = parseInt(mcb.join(''), 2);
+  const eps = parseInt(lcb.join(''), 2);
+  return gam * eps;
 }
 
 console.log('puzzle 1: ', puzzle1());
