@@ -234,6 +234,16 @@ class Grid {
     return this._g[this.key(v)];
   }
 
+  getOrSet(v, fn) {
+    const key = this.key(v);
+    let d = this._g[key];
+    if (!d) {
+      d = fn();
+      this._g[key] = d;
+    }
+    return d;
+  }
+
   values() {
     return Object.values(this._g);
   }
