@@ -62,3 +62,4 @@ function puzzle1() {
 console.log('puzzle 1: ', puzzle1());
 console.log('puzzle 2: ', puzzle2());
 console.log('puzzle 3: ', puzzle3());
+console.log('puzzle 4: ', puzzle4());
