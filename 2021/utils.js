@@ -281,6 +281,10 @@ Set.prototype.first = function() {
   return this.keys().next().value;
 }
 
+Array.prototype.sum = function() {
+  return this.reduce((s, e) => s + e, 0);
+}
+
 module.exports = {
   permute,
   ggt,
