@@ -28,7 +28,7 @@ function puzzle1(n) {
 
 function puzzle2(str) {
   const lens = str.split('').map((c) => c.charCodeAt(0));
-  lens.push(17, 31, 73, 47, 23)
+  lens.push(17, 31, 73, 47, 23);
 
   let a = new Array(256);
   for (let i = 0; i < 256; i++) {
