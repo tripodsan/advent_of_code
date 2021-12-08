@@ -219,15 +219,25 @@ class Grid {
   }
 
   put(v, data) {
+    const key = this.touch(v);
+    return this._g[key] = {
+      v: [...v],
+      ...data,
+    };
+  }
+
+  touch(v) {
     const key = this.key(v);
     for (let p = 0; p < v.length; p ++) {
       this.min[p] = Math.min(this.min[p], v[p]);
       this.max[p] = Math.max(this.max[p], v[p]);
     }
-    return this._g[key] = {
-      v: [...v],
-      ...data,
-    };
+    return key;
+  }
+
+  del(v) {
+    const key = this.key(v);
+    delete this._g[key];
   }
 
   get(v) {
