@@ -1,5 +1,23 @@
 
 
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
 function permute(rest, prefix = []) {
   if (rest.length === 0) {
     return [prefix];
@@ -219,23 +237,63 @@ class Grid {
   }
 
   put(v, data) {
-    const key = this.key(v);
-    for (let p = 0; p < v.length; p ++) {
-      this.min[p] = Math.min(this.min[p], v[p]);
-      this.max[p] = Math.max(this.max[p], v[p]);
-    }
+    const key = this.touch(v);
     return this._g[key] = {
       v: [...v],
       ...data,
     };
   }
 
+  touch(v) {
+    const key = this.key(v);
+    for (let p = 0; p < v.length; p ++) {
+      this.min[p] = Math.min(this.min[p], v[p]);
+      this.max[p] = Math.max(this.max[p], v[p]);
+    }
+    return key;
+  }
+
+  del(v) {
+    const key = this.key(v);
+    delete this._g[key];
+  }
+
   get(v) {
     return this._g[this.key(v)];
   }
 
+  getOrSet(v, fn, up) {
+    const key = this.touch(v);
+    let d = this._g[key];
+    if (!d) {
+      d = fn();
+      this._g[key] = d;
+    } else if (up) {
+      d = up(d);
+    }
+    return d;
+  }
+
   values() {
     return Object.values(this._g);
+  }
+
+  dump(grid, pos) {
+    for (let y = grid.min[1]; y <= grid.max[1]; y++) {
+      const row = [];
+      let delim = ' ';
+      for (let x = grid.min[0]; x <= grid.max[0]; x++) {
+        if (pos[0] === x && pos[1] === y) {
+          row.push('[');
+          delim = ']';
+        } else {
+          row.push(delim);
+          delim = ' ';
+        }
+        row.push(grid.get([x, y])?.c ?? '.');
+      }
+      console.log(row.join(''));
+    }
   }
 }
 
@@ -269,6 +327,10 @@ Set.prototype.first = function() {
     return undefined;
   }
   return this.keys().next().value;
+}
+
+Array.prototype.sum = function() {
+  return this.reduce((s, e) => s + e, 0);
 }
 
 module.exports = {
