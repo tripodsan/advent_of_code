@@ -1,5 +1,5 @@
 const fs = require('fs');
-const { permute } = require('../utils.js');
+const { permute } = require('../../utils.js');
 
 const data = fs.readFileSync('./input.txt', 'utf-8')
   .split('\n')

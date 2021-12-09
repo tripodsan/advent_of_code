@@ -1,6 +1,6 @@
 
 const fs = require('fs');
-// const { kgv } = require('../utils.js');
+// const { kgv } = require('../../utils.js');
 
 const data = fs.readFileSync('./input.txt', 'utf-8')
   .split('\n')

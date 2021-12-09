@@ -1,6 +1,6 @@
 
 const fs = require('fs');
-const { Grid } = require('../utils.js');
+const { Grid } = require('../../utils.js');
 // p1: 5145
 // p2: 16518
 

@@ -1,4 +1,4 @@
-require('../utils.js');
+require('../../utils.js');
 const fs = require('fs');
 const data = fs.readFileSync('./input.txt', 'utf-8')
   .split('\n')

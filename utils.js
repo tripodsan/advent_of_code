@@ -278,11 +278,11 @@ class Grid {
     return Object.values(this._g);
   }
 
-  dump(grid, pos) {
-    for (let y = grid.min[1]; y <= grid.max[1]; y++) {
+  dump(pos, draw) {
+    for (let y = this.min[1]; y <= this.max[1]; y++) {
       const row = [];
       let delim = ' ';
-      for (let x = grid.min[0]; x <= grid.max[0]; x++) {
+      for (let x = this.min[0]; x <= this.max[0]; x++) {
         if (pos[0] === x && pos[1] === y) {
           row.push('[');
           delim = ']';
@@ -290,7 +290,12 @@ class Grid {
           row.push(delim);
           delim = ' ';
         }
-        row.push(grid.get([x, y])?.c ?? '.');
+        const cell = this.get([x, y]);
+        if (cell) {
+          row.push(draw ? draw(cell) : '#');
+        } else {
+          row.push('.');
+        }
       }
       console.log(row.join(''));
     }

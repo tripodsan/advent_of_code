@@ -1,6 +1,6 @@
 
 const fs = require('fs');
-const { Grid } = require('../utils.js');
+const { Grid } = require('../../utils.js');
 
 const data = fs.readFileSync('./input.txt', 'utf-8')
   .split('\n')
