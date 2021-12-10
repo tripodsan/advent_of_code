@@ -338,6 +338,28 @@ Array.prototype.sum = function() {
   return this.reduce((s, e) => s + e, 0);
 }
 
+Array.prototype.max = function() {
+  return this.reduce((p, e, idx) => {
+    if (e > p.max) {
+      p.max = e;
+      p.idx = idx;
+    }
+    return p;
+  }, { max: Number.MIN_SAFE_INTEGER, idx: -1 });
+}
+
+Array.prototype.min = function() {
+  return this.reduce((p, e, idx) => {
+    if (e < p.min) {
+      p.min = e;
+      p.idx = idx;
+    }
+    return p;
+  }, { max: Number.MAX_SAFE_INTEGER, idx: -1 });
+}
+
+
+
 module.exports = {
   permute,
   ggt,
