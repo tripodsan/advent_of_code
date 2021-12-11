@@ -358,7 +358,21 @@ Array.prototype.min = function() {
   }, { max: Number.MAX_SAFE_INTEGER, idx: -1 });
 }
 
+Array.init = function(size, value) {
+  const a = new Array(size);
+  if (typeof value === 'function') {
+    for (let i = 0; i < size; i++) {
+      a[i] = value(i);
+    }
+  } else {
+    a.fill(value);
+  }
+  return a;
+}
 
+// Array.prototype.flat = function() {
+//   return [].concat(...this);
+// }
 
 module.exports = {
   permute,
