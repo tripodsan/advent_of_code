@@ -128,6 +128,10 @@ class PriorityQueue {
     this._setPrio(e, prio);
   }
 
+  has(item) {
+    return this._entries.has(item);
+  }
+
   getPrio(item) {
     const e = this._entries.get(item);
     return e ? e.prio : this._defaultPrio;
@@ -171,6 +175,14 @@ class PriorityQueue {
     e.prev.next = e.next;
     e.next.prev = e.prev;
     return e.value;
+  }
+
+  *entries() {
+    let entry = this._first.next;
+    while (entry !== this._last) {
+      yield [entry.item, entry.prio];
+      entry = entry.next;
+    }
   }
 
   first() {
