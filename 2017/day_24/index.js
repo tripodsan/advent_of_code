@@ -21,7 +21,7 @@ function traverse(nodes, node, path, cost, score) {
   if (path.length >= score.maxLen) {
     score.maxLen = path.length;
     score.maxLenCost = cost;
-    console.log(path.join('-'), cost);
+    // console.log(path.join('-'), cost);
   } else if (path.length === score.maxLen) {
     score.maxLenCost = Math.max(score.maxLenCost, cost);
   }
@@ -44,7 +44,7 @@ function puzzle1() {
 
   const edges = {};
   data.forEach(([c0, c1]) => {
-    console.log(c0, c1);
+    // console.log(c0, c1);
     let n0 = nodes[c0];
     if (!n0) {
       n0 = {
