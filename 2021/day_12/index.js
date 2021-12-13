@@ -15,7 +15,7 @@ let data = fs.readFileSync('./input.txt', 'utf-8')
 
 // console.log(data);
 
-function traverse(nodes, node, path, paths) {
+function traverse(nodes, node, path, paths, twice) {
   let num = 0;
   path = `${path}${node.id},`;
   for (const name of node.children) {
@@ -26,7 +26,12 @@ function traverse(nodes, node, path, paths) {
       const child = nodes.get(name);
       if (child.n < child.max) {
         child.n++;
-        num += traverse(nodes, child, path, paths)
+        num += traverse(nodes, child, path, paths, twice)
+        if (!twice && child.max === 1) {
+          child.max++;
+          num += traverse(nodes, child, path, paths, 1);
+          child.max--;
+        }
         child.n--;
       }
     }
@@ -64,25 +69,18 @@ function init() {
 
 function puzzle1() {
   const nodes = init();
-  console.log(nodes);
-  return traverse(nodes, nodes.get('start'), '', new Set());
+  // console.log(nodes);
+  return traverse(nodes, nodes.get('start'), '', new Set(), 2);
 }
 
 function puzzle2() {
-  let sum = 0;
+  const nodes = init();
+  // console.log(nodes);
   const paths = new Set();
-  for (const n of init().values()) {
-    if (n.max === 1 && n.id !== 'start') {
-      const nodes = init();
-      nodes.get(n.id).max = 2;
-      const num = traverse(nodes, nodes.get('start'), '', paths);
-      console.log(n.id, num);
-      sum += num;
-    }
-  }
+  traverse(nodes, nodes.get('start'), '', paths, 0);
   return paths.size;
 }
 
 
-console.log('puzzle 1:', puzzle1());
-console.log('puzzle 2:', puzzle2());
+console.log('puzzle 1:', puzzle1()); // 3576
+console.log('puzzle 2:', puzzle2()); // 84271
