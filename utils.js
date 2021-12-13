@@ -240,6 +240,7 @@ function* rangedCounter(from, to) {
 class Grid {
   constructor(dim = 2) {
     this._g = {};
+    this.dim = dim;
     this.min = new Array(dim).fill(Number.MAX_SAFE_INTEGER);
     this.max = new Array(dim).fill(Number.MIN_SAFE_INTEGER);
   }
@@ -286,8 +287,20 @@ class Grid {
     return d;
   }
 
+  size() {
+    return this.values().length;
+  }
+
   values() {
     return Object.values(this._g);
+  }
+
+  trim() {
+    this.min = new Array(this.dim).fill(Number.MAX_SAFE_INTEGER);
+    this.max = new Array(this.dim).fill(Number.MIN_SAFE_INTEGER);
+    for (const { v } of this.values()) {
+      this.touch(v);
+    }
   }
 
   dump(pos, draw) {
