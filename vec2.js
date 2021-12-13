@@ -2,7 +2,7 @@
 
 const vec2 = {};
 
-export default vec2;
+module.exports = vec2;
 
 /**
  * Make a cross product and only return the z component

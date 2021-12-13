@@ -308,7 +308,7 @@ class Grid {
       const row = [];
       let delim = ' ';
       for (let x = this.min[0]; x <= this.max[0]; x++) {
-        if (pos[0] === x && pos[1] === y) {
+        if (pos && pos[0] === x && pos[1] === y) {
           row.push('[');
           delim = ']';
         } else {
