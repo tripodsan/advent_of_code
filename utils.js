@@ -380,7 +380,7 @@ Array.prototype.min = function() {
       p.idx = idx;
     }
     return p;
-  }, { max: Number.MAX_SAFE_INTEGER, idx: -1 });
+  }, { min: Number.MAX_SAFE_INTEGER, idx: -1 });
 }
 
 Array.init = function(size, value) {
