@@ -22,12 +22,11 @@ const HEX = {
 }
 
 function init() {
-  const buf = fs.readFileSync('./input.txt', 'utf-8')
-    .trim('\n')
+  return fs.readFileSync('./input.txt', 'utf-8')
+    .trim()
     .split('')
     .map((s) => HEX[s])
     .flat();
-  return buf;
 }
 
 function read(buf, n) {
