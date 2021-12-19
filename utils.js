@@ -18,7 +18,7 @@
  *
  */
 
-function permute(rest, prefix = []) {
+export function permute(rest, prefix = []) {
   if (rest.length === 0) {
     return [prefix];
   }
@@ -197,7 +197,7 @@ class PriorityQueue {
   }
 }
 
-function* counter(digits, mag) {
+export function* counter(digits, mag) {
   const base = digits.length;
   const idx = new Array(mag).fill(0);
   let overflow = false;
@@ -395,20 +395,20 @@ Array.init = function(size, value) {
   return a;
 }
 
-// Array.prototype.flat = function() {
-//   return [].concat(...this);
+// // Array.prototype.flat = function() {
+// //   return [].concat(...this);
+// // }
+//
+// module.exports = {
+//   permute,
+//   ggt,
+//   kgv,
+//   simplify,
+//   power,
+//   egcd,
+//   modinv,
+//   PriorityQueue,
+//   counter,
+//   rangedCounter,
+//   Grid,
 // }
-
-module.exports = {
-  permute,
-  ggt,
-  kgv,
-  simplify,
-  power,
-  egcd,
-  modinv,
-  PriorityQueue,
-  counter,
-  rangedCounter,
-  Grid,
-}

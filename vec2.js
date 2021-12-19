@@ -1,8 +1,6 @@
 /* eslint-disable no-param-reassign,func-names,prefer-destructuring,camelcase */
 
-const vec2 = {};
-
-module.exports = vec2;
+export const vec2 = {};
 
 /**
  * Make a cross product and only return the z component
