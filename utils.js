@@ -237,7 +237,7 @@ function* rangedCounter(from, to) {
   } while (!overflow);
 }
 
-class Grid {
+export class Grid {
   constructor(dim = 2) {
     this._g = {};
     this.dim = dim;
