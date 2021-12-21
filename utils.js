@@ -359,6 +359,15 @@ Set.prototype.first = function() {
   return this.keys().next().value;
 }
 
+Map.prototype.getOrSet = function(key, fnOrValue) {
+  if (this.has(key)) {
+    return this.get(key);
+  }
+  const value = (typeof fnOrValue === 'function') ? fnOrValue(key) : fnOrValue;
+  this.set(key, value);
+  return value;
+}
+
 Array.prototype.sum = function() {
   return this.reduce((s, e) => s + e, 0);
 }

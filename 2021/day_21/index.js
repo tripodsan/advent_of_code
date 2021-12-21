@@ -1,3 +1,4 @@
+import * as utils from '../../utils.js';
 
 function puzzle1(pos) {
   pos[0]--;
@@ -45,20 +46,16 @@ function puzzle2(pos0, pos1) {
   let p1Score = 0;
 
   const add = (t, p0, p1, s0, s1, count) => {
-    if (s0 >= 22) {
+    if (s0 >= 21) {
       p0Score += count;
       return;
     }
-    if (s1 >= 22) {
+    if (s1 >= 21) {
       p1Score += count;
       return;
     }
     const h = hash(t, p0, p1, s0, s1);
-    let conf = confs.get(h);
-    if (!conf) {
-      conf = { h, t, p0, p1, s0, s1, u: 0 }
-      confs.set(h, conf);
-    }
+    const conf = confs.getOrSet(h, () => ({ h, t, p0, p1, s0, s1, u: 0 }));
     conf.u += count;
   }
 
