@@ -19,6 +19,7 @@
   "homepage": "https://github.com/tripodsan/advent_of_code#readme",
   "dependencies": {
     "chalk": "5.0.0",
+    "chalk-template": "0.2.0",
     "heap-js": "2.1.6",
     "unist-util-inspect": "7.0.0",
     "unist-util-visit": "^4.1.0"
