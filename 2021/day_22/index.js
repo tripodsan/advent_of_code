@@ -50,16 +50,17 @@ function fracture(r0, r1) {
         return [r0];
       }
       if (f0 < x0) {
-        // create new frag from f0...x0
+        // create new frag from left f0...x0
         newFrags.push(create(frag, i, [f0, x0]))
         f0 = x0;
       }
       if (x1 < f1) {
-        // create new frag from x1...f1
+        // create new frag from right x1...f1
         newFrags.push(create(frag, i, [x1, f1]));
         f1 = x1;
       }
       if (f0 < f1) {
+        // create a new frag of the middle part
         newFrags.push(create(frag, i, [f0, f1]));
       }
     }
