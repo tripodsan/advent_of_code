@@ -217,7 +217,7 @@ export function* counter(digits, mag) {
   } while (!overflow);
 }
 
-function* rangedCounter(from, to) {
+export function* rangedCounter(from, to) {
   const mag = from.length;
   const idx = [...from];
   let overflow = false;
