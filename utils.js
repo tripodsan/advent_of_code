@@ -304,16 +304,17 @@ export class Grid {
   }
 
   dump(pos, draw) {
+    const sep = pos === undefined ? '' : ' ';
     for (let y = this.min[1]; y <= this.max[1]; y++) {
       const row = [];
       let delim = ' ';
       for (let x = this.min[0]; x <= this.max[0]; x++) {
         if (pos && pos[0] === x && pos[1] === y) {
           row.push('[');
-          delim = ']';
+          delim = sep;
         } else {
           row.push(delim);
-          delim = ' ';
+          delim = sep;
         }
         const cell = this.get([x, y]);
         if (cell) {
@@ -404,20 +405,29 @@ Array.init = function(size, value) {
   return a;
 }
 
-// // Array.prototype.flat = function() {
-// //   return [].concat(...this);
-// // }
-//
-// module.exports = {
-//   permute,
-//   ggt,
-//   kgv,
-//   simplify,
-//   power,
-//   egcd,
-//   modinv,
-//   PriorityQueue,
-//   counter,
-//   rangedCounter,
-//   Grid,
-// }
+Array.prototype.delete = function(item) {
+  const idx = this.indexOf(item);
+  if (idx < 0) {
+    return false;
+  }
+  this.splice(idx, 1);
+  return true;
+}
+
+Array.prototype.equals = function(other) {
+  if (this === other) {
+    return true;
+  }
+  if (!Array.isArray(other)) {
+    return false;
+  }
+  if (this.length !== other.length) {
+    return false;
+  }
+  for (let i = 0; i < this.length; i++) {
+    if (this[i] !== other[i]) {
+      return false;
+    }
+  }
+  return true;
+}
