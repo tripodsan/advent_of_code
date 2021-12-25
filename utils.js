@@ -18,6 +18,8 @@
  *
  */
 
+import fs from 'fs';
+
 export function permute(rest, prefix = []) {
   if (rest.length === 0) {
     return [prefix];
@@ -243,6 +245,22 @@ export class Grid {
     this.dim = dim;
     this.min = new Array(dim).fill(Number.MAX_SAFE_INTEGER);
     this.max = new Array(dim).fill(Number.MIN_SAFE_INTEGER);
+  }
+
+  init(str, fn) {
+    str
+      .split('\n')
+      .map((s) => s.trim())
+      .filter((s) => !!s)
+      .forEach((line, y) => {
+        line.split('').forEach((c, x) => {
+          const dat = fn(x, y, c);
+          if (dat) {
+            this.put([x, y], dat);
+          }
+        });
+      })
+    return this;
   }
 
   key(v) {
