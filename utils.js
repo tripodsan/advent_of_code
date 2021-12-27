@@ -338,7 +338,7 @@ export class Grid {
         if (cell) {
           row.push(draw ? draw(cell) : '#');
         } else {
-          row.push('.');
+          row.push(draw ? draw(null) : '.');
         }
       }
       console.log(row.join(''));
