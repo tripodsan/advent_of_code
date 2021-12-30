@@ -297,7 +297,10 @@ export class Grid {
     const key = this.touch(v);
     let d = this._g[key];
     if (!d) {
-      d = fn();
+      d = {
+        v: Array.from(v),
+        ...fn(),
+      };
       this._g[key] = d;
     } else if (up) {
       d = up(d);
