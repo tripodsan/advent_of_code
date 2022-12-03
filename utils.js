@@ -34,7 +34,7 @@ export function permute(rest, prefix = []) {
   );
 }
 
-function ggt(a, b) {
+export function ggt(a, b) {
   for (;;) {
     const d = a - b;
     if (d>0) {
@@ -47,12 +47,12 @@ function ggt(a, b) {
     }
   }
 }
-function kgv(a, b) {
+export function kgv(a, b) {
   return (a*b) / ggt(a,b);
 }
 
 
-function simplify(a, b) {
+export function simplify(a, b) {
   try {
     if (a === 0) {
       return [0, Math.sign(b)];
@@ -69,7 +69,7 @@ function simplify(a, b) {
 
 /* Iterative Function to calculate
    (x^y)%p in O(log y) */
-function power(x, y, p) {
+export function power(x, y, p) {
   // Initialize result
   let res = BigInt(1);
   while (y > 0) {
@@ -87,7 +87,7 @@ function power(x, y, p) {
   return res;
 }
 
-function egcd(a, b) {
+export function egcd(a, b) {
   if (a === 0n)
     return [b, 0n, 1n];
   else {
@@ -96,7 +96,7 @@ function egcd(a, b) {
   }
 }
 
-function modinv(a, m) {
+export function modinv(a, m) {
   [g, x, y] = egcd(a, m);
   if (g !== 1n)
     throw new Error('modular inverse does not exist');
@@ -105,7 +105,7 @@ function modinv(a, m) {
   }
 }
 
-class PriorityQueue {
+export class PriorityQueue {
   constructor(defaultPrio = Number.MAX_SAFE_INTEGER) {
     this._defaultPrio = defaultPrio;
     this._first = { prev: null, };
