@@ -17,8 +17,7 @@
  * limitations under the License.
  *
  */
-
-import fs from 'fs';
+import v8 from 'v8';
 
 export function permute(rest, prefix = []) {
   if (rest.length === 0) {
@@ -452,3 +451,5 @@ Array.prototype.equals = function(other) {
   }
   return true;
 }
+
+export const clone = (o) => v8.deserialize(v8.serialize(o));
