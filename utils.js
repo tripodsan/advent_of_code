@@ -266,7 +266,7 @@ export class Grid {
     return v.join(':');
   }
 
-  put(v, data) {
+  put(v, data = {}) {
     const key = this.touch(v);
     return this._g[key] = {
       v: [...v],
