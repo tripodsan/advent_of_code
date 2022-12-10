@@ -453,3 +453,44 @@ Array.prototype.equals = function(other) {
 }
 
 export const clone = (o) => v8.deserialize(v8.serialize(o));
+
+/**
+ * Extracts the characters from the line array and transposes them.
+ */
+function ocr_extract(lines) {
+  // make canonical
+  lines = lines.map((l) => l.split('').map((c) => (c === ' ' || c === '.') ? '.' : '#'));
+  const BLANK = '.'.repeat(lines.length);
+  const chars = [];
+  let wasBlank = true;
+  for (let x = 0; x < lines[0].length; x += 1) {
+    // transpose
+    const col = lines.map((line) => line[x]).join('');
+    const blank = col === BLANK;
+    if (!blank) {
+      if (wasBlank) {
+        chars.push('');
+      }
+      chars[chars.length - 1] += col + '\n';
+    }
+    wasBlank = blank;
+  }
+  return chars;
+}
+
+const CHARSET = {
+  map: 'ABCEFGHIJKLOPRSUYZ',
+  chars: ocr_extract([
+    '.##..###...##..####.####..##..#..#.###...##.#..#.#.....##..###..###...###.#..#.#...#.####',
+    '#..#.#..#.#..#.#....#....#..#.#..#..#.....#.#.#..#....#..#.#..#.#..#.#....#..#.#...#....#',
+    '#..#.###..#....###..###..#....####..#.....#.##...#....#..#.#..#.#..#.#....#..#..#.#....#.',
+    '####.#..#.#....#....#....#.##.#..#..#.....#.#.#..#....#..#.###..###...##..#..#...#....#..',
+    '#..#.#..#.#..#.#....#....#..#.#..#..#..#..#.#.#..#....#..#.#....#.#.....#.#..#...#...#...',
+    '#..#.###...##..####.#.....###.#..#.###..##..#..#.####..##..#....#..#.###...##....#...####',
+  ]),
+}
+CHARSET.chars = CHARSET.chars.reduce((obj, str, idx) => ({...obj, [str]:CHARSET.map[idx]}), {})
+
+export function ocr(lines) {
+  return ocr_extract(lines).map((c) => CHARSET.chars[c] || '?').join('');
+}
