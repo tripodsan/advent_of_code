@@ -1,5 +1,5 @@
 import fs from 'fs';
-import { Grid } from '../../utils.js';
+import { Grid, ocr } from '../../utils.js';
 import { vec2 } from '../../vec2.js';
 
 const data = fs.readFileSync('./input.txt', 'utf-8')
@@ -28,7 +28,9 @@ function puzzle2() {
     scr[Math.floor(n / 40)][x] = Math.abs(s - x) < 2 ? '█' : ' ';
     s += ins[n];
   }
-  return '\n' + scr.map((line) => line.join('')).join('\n');
+  const lines = scr.map((line) => line.join(''));
+  console.log(lines);
+  return ocr(lines);
 }
 
 function puzzle1() {
