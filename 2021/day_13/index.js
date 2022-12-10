@@ -1,5 +1,5 @@
-const { Grid } = require('../../utils.js');
-const fs = require('fs');
+import { Grid } from '../../utils.js';
+import fs from 'fs';
 
 function init() {
   const grid = new Grid();
