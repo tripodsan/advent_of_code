@@ -19,6 +19,7 @@
  */
 import v8 from 'v8';
 import { vec2 } from './vec2.js';
+import { Heap } from 'heap-js';
 
 export function permute(rest, prefix = []) {
   if (rest.length === 0) {
@@ -338,6 +339,21 @@ export class Grid {
     }
   }
 
+  *neighbours(pos) {
+    const DIRS = [
+      [1, 0],
+      [-1 ,0],
+      [0, 1],
+      [0, -1],
+    ]
+    for (const dir of DIRS) {
+      const n = this.get(vec2.add([0, 0], pos, dir));
+      if (n) {
+        yield n;
+      }
+    }
+  }
+
   dump(pos, draw) {
     const sep = pos === undefined ? '' : ' ';
     for (let y = this.min[1]; y <= this.max[1]; y++) {
@@ -372,12 +388,6 @@ export class Grid {
    * @returns {Array<Cell>}
    */
   aStar(start, goal, d, h = Grid.h_manhatten(goal)) {
-    const DIRS = [
-      [1, 0],
-      [-1 ,0],
-      [0, 1],
-      [0, -1],
-    ]
     // ensure unique start end end vector
     const beg = this.get(start);
     const end = this.get(goal);
@@ -425,10 +435,9 @@ export class Grid {
       openSet.delete(current);
 
       /// for each neighbor of current
-      for (const dir of DIRS) {
-        const neighbor = this.get(vec2.add([0, 0], current.v, dir));
+      for (const neighbor of this.neighbours(current.v)) {
         // d(current,neighbor) is the weight of the edge from current to neighbor
-        const dist = neighbor ? d(current, neighbor) : 0;
+        const dist = d(current, neighbor);
         if (dist <= 0) {
           continue;
         }
@@ -451,6 +460,31 @@ export class Grid {
     }
     // Open set is empty but goal was never reached
     return [];
+  }
+
+  djikstra(start, check, dist) {
+    const visited = new Set();
+    const q = new Heap((e0, e1) => e0.d - e1.d);
+    const beg = this.get(start);
+    visited.add(beg)
+    q.add({ d: 0, c: beg });
+
+    while (q.size()) {
+      const { d, c } = q.pop();
+      if (check(c)) {
+        return d;
+      }
+      for (const n of this.neighbours(c.v)) {
+        if (!visited.has(n)) {
+          const v = dist(c, n);
+          if (v > 0) {
+            visited.add(n);
+            q.add({ d: d + v, c: n });
+          }
+        }
+      }
+    }
+    return -1;
   }
 }
 
