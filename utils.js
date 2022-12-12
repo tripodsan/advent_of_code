@@ -18,6 +18,7 @@
  *
  */
 import v8 from 'v8';
+import { vec2 } from './vec2.js';
 
 export function permute(rest, prefix = []) {
   if (rest.length === 0) {
@@ -239,6 +240,20 @@ export function* rangedCounter(from, to) {
 }
 
 export class Grid {
+  /**
+   * Returns a heuristic function for the A* algorithm that calculates the value based on the
+   * manhatten distance from the cell to the goal.
+   * @param {vec2} goal
+   * @returns {function(*): *}
+   */
+  static h_manhatten(goal) {
+    return (cell) => {
+      const dx = cell.v[0] - goal[0];
+      const dy = cell.v[1] - goal[1];
+      return Math.abs(dx) + Math.abs(dy);
+    }
+  }
+
   constructor(dim = 2) {
     this._g = {};
     this.dim = dim;
@@ -345,6 +360,97 @@ export class Grid {
       }
       console.log(row.join(''));
     }
+  }
+
+  /**
+   * A* finds a path from start to goal.
+   * h is the heuristic function. h(n) estimates the cost to reach goal from node n.
+   * @param {vec2} start
+   * @param {vec2} goal
+   * @param {function} d distance function from current to neighbour cell.
+   * @param {function} h
+   * @returns {Array<Cell>}
+   */
+  aStar(start, goal, d, h = Grid.h_manhatten(goal)) {
+    const DIRS = [
+      [1, 0],
+      [-1 ,0],
+      [0, 1],
+      [0, -1],
+    ]
+    // ensure unique start end end vector
+    const beg = this.get(start);
+    const end = this.get(goal);
+
+    // The set of discovered nodes that may need to be (re-)expanded.
+    // Initially, only the start node is known.
+    const openSet = new Set();
+    openSet.add(beg);
+
+    // For node n, cameFrom[n] is the node immediately preceding it on the cheapest path from start to n currently known.
+    const cameFrom = new Map();
+
+    // For node n, gScore[n] is the cost of the cheapest path from start to n currently known.
+    const gScore = new Map();
+    gScore.set(beg, 0);
+
+    // For node n, fScore[n] := gScore[n] + h(n).
+    const fScore = new Map();
+    fScore.set(beg, h(beg));
+
+    while (openSet.size) { // openSet is not empty
+      // current := the node in openSet having the lowest fScore[] value
+      let current = null;
+      let low = Number.MAX_SAFE_INTEGER;
+      for (const cell of openSet.values()) {
+        const f = fScore.get(cell) ?? Number.MAX_SAFE_INTEGER;
+        if (f < low) {
+          low = f;
+          current = cell;
+        }
+      }
+      if (!current) {
+        return [];
+      }
+
+      if (current === end) {
+        const total_path = [];
+        do {
+          total_path.unshift(current);
+          current = cameFrom.get(current);
+        } while (current);
+        return total_path
+      }
+
+      openSet.delete(current);
+
+      /// for each neighbor of current
+      for (const dir of DIRS) {
+        const neighbor = this.get(vec2.add([0, 0], current.v, dir));
+        // d(current,neighbor) is the weight of the edge from current to neighbor
+        const dist = neighbor ? d(current, neighbor) : 0;
+        if (dist <= 0) {
+          continue;
+        }
+
+        // tentative_gScore is the distance from start to the neighbor through current
+        let tentative_gScore = Number.MAX_SAFE_INTEGER;
+        if (gScore.has(current)) {
+          tentative_gScore = gScore.get(current) + dist;
+        }
+        const scoreNeighbor = gScore.get(neighbor) ?? Number.MAX_SAFE_INTEGER;
+
+        // This path to neighbor is better than any previous one. Record it!
+        if (tentative_gScore < scoreNeighbor) {
+          cameFrom.set(neighbor, current);
+          gScore.set(neighbor, tentative_gScore);
+          fScore.set(neighbor, tentative_gScore + h(neighbor));
+          openSet.add(neighbor);
+        }
+      }
+    }
+    // Open set is empty but goal was never reached
+    return [];
   }
 }
 
