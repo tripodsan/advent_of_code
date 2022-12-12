@@ -29,27 +29,23 @@ grid.init(data, (x, y, c) => {
 
 // console.log(grid.dump(beg.v, ({h}) => String.fromCharCode(h + 96)));
 
-function distance(current, next) {
-  if (next.h - current.h > 1) {
-    return 0;
-  }
-  return 1;
+function puzzle1() {
+  return grid.aStar(beg, end, (from, to) => {
+    if (to.h - from.h > 1) {
+      return 0;
+    }
+    return 1;
+  }).length - 1;
 }
 
-function puzzle1() {
-  return grid.aStar(beg, end, distance).length - 1;
-}
 function puzzle2() {
-  let best = Number.MAX_SAFE_INTEGER;
-  for (const cell of grid.values()) {
-    if (cell.h === 1) {
-      const path = grid.aStar(cell.v, end, distance);
-      if (path.length) {
-        best = Math.min(best, path.length - 1);
-      }
+  return grid.djikstra(end, (cell) => cell.h === 1,  (from, to) => {
+    if (from.h - to.h > 1) {
+      return -1;
     }
-  }
-  return best;
+    return 1;
+  });
+
 }
 
 console.log('puzzle 1 : ', puzzle1()); // 330
