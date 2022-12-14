@@ -283,6 +283,11 @@ export class Grid {
   }
 
   put(v, data = {}) {
+    if (typeof data === 'string') {
+      data = {
+        c: data,
+      }
+    }
     const key = this.touch(v);
     return this._g[key] = {
       v: [...v],
@@ -485,6 +490,27 @@ export class Grid {
       }
     }
     return -1;
+  }
+
+  line(p0, p1, d) {
+    const dx = p1[0] - p0[0];
+    const dy = p1[1] - p0[1];
+    const p = [p0[0], p0[1]];
+    if (dx === 0) {
+      while (p[1] !== p1[1]) {
+        this.put(p, d);
+        p[1] += Math.sign(dy);
+      }
+      this.put(p, d);
+    } else if (dy === 0) {
+      while (p[0] !== p1[0]) {
+        this.put(p, d);
+        p[0] += Math.sign(dx);
+      }
+      this.put(p, d);
+    } else {
+      throw Error('no implemented');
+    }
   }
 }
 
