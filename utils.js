@@ -660,3 +660,52 @@ CHARSET.chars = CHARSET.chars.reduce((obj, str, idx) => ({...obj, [str]:CHARSET.
 export function ocr(lines) {
   return ocr_extract(lines).map((c) => CHARSET.chars[c] || '?').join('');
 }
+
+
+/**
+ * Calculates the distance map of the given graph using the floyd-warshall algorithm.
+ * @param {Map<any, Map<any, number>>} graph
+ */
+export function shortestPath(graph) {
+  const keys = [...graph.keys()];
+  // initialize all distances with infinity
+  const distMap = new Map(
+    keys.map(k => [
+      k,
+      new Map(keys.map(l => [l, Number.MAX_SAFE_INTEGER])),
+    ])
+  );
+  // and the given ones
+  for (const u of keys) {
+    distMap.get(u).set(u, 0);
+    for (const [v, d] of graph.get(u)) {
+      distMap.get(u).set(v, d);
+    }
+  }
+  for (const k of keys) {
+    const rowP= /** @type Map<any, number> */ distMap.get(k);
+    for (const i of keys) {
+      const row = /** @type Map<any, number> */ distMap.get(i);
+      for (const j of keys) {
+        row.set(j, Math.min(row.get(j), row.get(k) + rowP.get(j)))
+      }
+    }
+  }
+  return distMap;
+}
+
+function testShortestPath() {
+  const graph = new Map();
+  graph.set('A', new Map([['B', 3], ['D', 5]]));
+  graph.set('B', new Map([['A', 2], ['D', 4]]));
+  graph.set('C', new Map([['B', 1]]));
+  graph.set('D', new Map([['C', 2]]));
+  console.log(shortestPath(graph));
+  /*
+    Map(4) {
+      'A' => Map(4) { 'A' => 0, 'B' => 3, 'C' => 7, 'D' => 5 },
+      'B' => Map(4) { 'A' => 2, 'B' => 0, 'C' => 6, 'D' => 4 },
+      'C' => Map(4) { 'A' => 3, 'B' => 1, 'C' => 0, 'D' => 5 },
+      'D' => Map(4) { 'A' => 5, 'B' => 3, 'C' => 2, 'D' => 0 }
+   */
+}
