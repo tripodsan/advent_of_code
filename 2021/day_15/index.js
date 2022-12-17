@@ -10,7 +10,7 @@ const data = fs.readFileSync('./input.txt', 'utf-8')
 
 
 
-function djikstra(grid) {
+function dijkstra(grid) {
   const W = grid[0].length;
   const H = grid.length;
   const visited = Array.init(W*H, false);
@@ -33,7 +33,7 @@ function djikstra(grid) {
 }
 
 function puzzle1() {
-  return djikstra(data);
+  return dijkstra(data);
 }
 
 function puzzle2() {
@@ -51,7 +51,7 @@ function puzzle2() {
       i++;
     }
   }
-  return djikstra(rows);
+  return dijkstra(rows);
 }
 
 console.log('puzzle 1:', puzzle1()); // 589

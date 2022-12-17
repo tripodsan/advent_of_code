@@ -292,7 +292,7 @@ function dump(state) {
  console.log(map);
 }
 
-function djikstra(state) {
+function dijkstra(state) {
   const q = new Heap((e0, e1) => e0.e - e1.e);
   q.add(state);
   let best = Number.MAX_SAFE_INTEGER;
@@ -339,7 +339,7 @@ function puzzle1() {
   }
   dump(state);
   // console.log(goal(state));
-  return djikstra(state);
+  return dijkstra(state);
 
   // const newStates = moves(state, 'e', input0.indexOf('e'));
   // for (const ns of newStates) {

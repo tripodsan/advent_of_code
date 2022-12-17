@@ -374,9 +374,9 @@ export class Grid {
         }
         const cell = this.get([x, y]);
         if (cell) {
-          row.push(draw ? draw(cell) : '#');
+          row.push(draw ? draw(cell, [x, y]) : '#');
         } else {
-          row.push(draw ? draw(null) : '.');
+          row.push(draw ? draw(null, [x, y]) : '.');
         }
       }
       console.log(row.join(''));
@@ -467,7 +467,7 @@ export class Grid {
     return [];
   }
 
-  djikstra(start, check, dist) {
+  dijkstra(start, check, dist) {
     const visited = new Set();
     const q = new Heap((e0, e1) => e0.d - e1.d);
     const beg = this.get(start);

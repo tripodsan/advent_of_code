@@ -39,7 +39,7 @@ function puzzle1() {
 }
 
 function puzzle2() {
-  return grid.djikstra(end, (cell) => cell.h === 1,  (from, to) => {
+  return grid.dijkstra(end, (cell) => cell.h === 1,  (from, to) => {
     if (from.h - to.h > 1) {
       return -1;
     }
