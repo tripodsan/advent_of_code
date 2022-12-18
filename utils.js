@@ -344,19 +344,41 @@ export class Grid {
     }
   }
 
-  *neighbours(pos) {
-    const DIRS = [
-      [1, 0],
-      [-1 ,0],
-      [0, 1],
-      [0, -1],
-    ]
-    for (const dir of DIRS) {
-      const n = this.get(vec2.add([0, 0], pos, dir));
-      if (n) {
-        yield n;
+  *scan() {
+    const min = [...this.min];
+    const max = [...this.max];
+    for (const v of rangedCounter(min, max)) {
+      yield v;
+    }
+  }
+
+  *neighboursV(pos) {
+    const SIGN = [1, -1];
+    for (let d = 0; d < this.dim; d++) {
+      for (const s of SIGN) {
+        const v = [...pos];
+        v[d] += s;
+        yield v;
       }
     }
+  }
+
+
+  *neighbours(pos, cond = (c) => !!c) {
+    for (const v of this.neighboursV(pos)) {
+      const c = this.get(v);
+      if (cond(c)) {
+        yield c;
+      }
+    }
+  }
+
+  numNeighbours(pos, cond = (c) => !!c) {
+    let s = 0;
+    for (const n of this.neighbours(pos, cond)) {
+      s++;
+    }
+    return s;
   }
 
   dump(pos, draw) {
@@ -510,6 +532,24 @@ export class Grid {
       this.put(p, d);
     } else {
       throw Error('no implemented');
+    }
+  }
+
+  fill(start, cond = (c) => !c, fn = (v) => this.put(v)) {
+    const min = this.min;
+    const max = this.max;
+    const stack = [start];
+    while (stack.length) {
+      const v = stack.pop();
+      fn(v);
+      for (const n of this.neighboursV(v)) {
+        if (n[0] >= min[0] && n[0] <= max[0]
+          && n[1] >= min[1] && n[1] <= max[1]
+          && n[2] >= min[2] && n[2] <= max[2]
+          && cond(this.get(n))) {
+          stack.push(n);
+        }
+      }
     }
   }
 }
