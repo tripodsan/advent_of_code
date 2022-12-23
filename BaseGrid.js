@@ -1,5 +1,3 @@
-
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -17,11 +15,10 @@
  * limitations under the License.
  *
  */
-import v8 from 'v8';
-import { vec2 } from './vec2.js';
+import { rangedCounter } from './utils.js';
 import { Heap } from 'heap-js';
 
-export class Grid {
+export class BaseGrid {
   /**
    * Returns a heuristic function for the A* algorithm that calculates the value based on the
    * manhatten distance from the cell to the goal.
@@ -37,7 +34,6 @@ export class Grid {
   }
 
   constructor(dim = 2) {
-    this._g = {};
     this.dim = dim;
     this.min = new Array(dim).fill(Number.MAX_SAFE_INTEGER);
     this.max = new Array(dim).fill(Number.MIN_SAFE_INTEGER);
@@ -59,21 +55,52 @@ export class Grid {
     return this;
   }
 
+  /**
+   * Returns the key for the given vector
+   * @param {Array<number>} v
+   * @return {any} the key
+   */
   key(v) {
-    return v.join(':');
+    throw Error('AbstractMethod');
   }
 
+  /**
+   * Update the grid at `v` with `data`
+   * @param {Array<number>} v
+   * @param {object} data
+   * @return {object} the cell
+   */
   put(v, data = {}) {
-    if (typeof data === 'string') {
-      data = {
-        c: data,
-      }
-    }
-    const key = this.touch(v);
-    return this._g[key] = {
-      v: [...v],
-      ...data,
-    };
+    throw Error('AbstractMethod');
+  }
+
+  /**
+   * deletes the cell
+   * @param {Array<number>} v
+   */
+  del(v) {
+    throw Error('AbstractMethod');
+  }
+
+  /**
+   * Get the cell at `v`
+   * @param {Array<number>} v
+   * @return {object} the cell
+   */
+  get(v) {
+    throw Error('AbstractMethod');
+  }
+
+  getOrSet(v, fn, up) {
+    throw Error('AbstractMethod');
+  }
+
+  size() {
+    throw Error('AbstractMethod');
+  }
+
+  values() {
+    throw Error('AbstractMethod');
   }
 
   touch(v) {
@@ -83,34 +110,6 @@ export class Grid {
       this.max[p] = Math.max(this.max[p], v[p]);
     }
     return key;
-  }
-
-  del(v) {
-    const key = this.key(v);
-    delete this._g[key];
-  }
-
-  get(v) {
-    return this._g[this.key(v)];
-  }
-
-  getOrSet(v, fn, up) {
-    const key = this.touch(v);
-    let d = this._g[key];
-    if (!d) {
-      d = {
-        v: Array.from(v),
-        ...fn(),
-      };
-      this._g[key] = d;
-    } else if (up) {
-      d = up(d);
-    }
-    return d;
-  }
-
-  size() {
-    return this.values().length;
   }
 
   span(dim) {
@@ -125,11 +124,6 @@ export class Grid {
     return s;
   }
 
-
-
-  values() {
-    return Object.values(this._g);
-  }
 
   trim() {
     this.min = new Array(this.dim).fill(Number.MAX_SAFE_INTEGER);
@@ -209,7 +203,7 @@ export class Grid {
    * @param {function} h
    * @returns {Array<Cell>}
    */
-  aStar(start, goal, d, h = Grid.h_manhatten(goal)) {
+  aStar(start, goal, d, h = BaseGrid.h_manhatten(goal)) {
     // ensure unique start end end vector
     const beg = this.get(start);
     const end = this.get(goal);
