@@ -42,12 +42,12 @@ export class Grid extends BaseGrid {
         c: data,
       }
     }
-    const key = this.touch(v);
+    this.touch(v);
     const value = {
       v: [...v],
       ...data,
     };
-    this._m.set(key, value);
+    this._m.set(this.key(v), value);
     return value;
   }
 
@@ -60,9 +60,10 @@ export class Grid extends BaseGrid {
   }
 
   getOrSet(v, fn, up) {
-    const key = this.touch(v);
+    const key = this.key(v);
     let d = this._m.get(key);
     if (!d) {
+      this.touch(v);
       d = {
         v: Array.from(v),
         ...fn(),

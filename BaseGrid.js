@@ -21,11 +21,11 @@ import { Heap } from 'heap-js';
 export class BaseGrid {
   /**
    * Returns a heuristic function for the A* algorithm that calculates the value based on the
-   * manhatten distance from the cell to the goal.
+   * manhattan distance from the cell to the goal.
    * @param {vec2} goal
    * @returns {function(*): *}
    */
-  static h_manhatten(goal) {
+  static h_manhattan(goal) {
     return (cell) => {
       const dx = cell.v[0] - goal[0];
       const dy = cell.v[1] - goal[1];
@@ -104,12 +104,10 @@ export class BaseGrid {
   }
 
   touch(v) {
-    const key = this.key(v);
     for (let p = 0; p < v.length; p ++) {
       this.min[p] = Math.min(this.min[p], v[p]);
       this.max[p] = Math.max(this.max[p], v[p]);
     }
-    return key;
   }
 
   span(dim) {
@@ -203,7 +201,7 @@ export class BaseGrid {
    * @param {function} h
    * @returns {Array<Cell>}
    */
-  aStar(start, goal, d, h = BaseGrid.h_manhatten(goal)) {
+  aStar(start, goal, d, h = BaseGrid.h_manhattan(goal)) {
     // ensure unique start end end vector
     const beg = this.get(start);
     const end = this.get(goal);

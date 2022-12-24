@@ -27,7 +27,7 @@ function merge(segs, x0, x1) {
 function segments(y) {
   const segs = [];
   for (const [sx, sy, bx, by] of data) {
-    // manhatten radius of sensor range
+    // manhattan radius of sensor range
     const r = Math.abs(bx - sx) + Math.abs(by - sy);
     const dy = r - Math.abs(sy - y);
     // if line segment is within scan. merge it
