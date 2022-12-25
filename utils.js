@@ -347,7 +347,7 @@ export const clone = (o) => v8.deserialize(v8.serialize(o));
  */
 function ocr_extract(lines) {
   // make canonical
-  lines = lines.map((l) => l.split('').map((c) => (c === ' ' || c === '.') ? '.' : '#'));
+  lines = lines.map((l) => (Array.isArray(l) ? l : l.split('')).map((c) => (c === ' ' || c === '.') ? '.' : '#'));
   const BLANK = '.'.repeat(lines.length);
   const chars = [];
   let wasBlank = true;
