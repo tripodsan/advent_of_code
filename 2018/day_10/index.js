@@ -1,7 +1,6 @@
-const { Grid } = require('../../utils.js');
-const vec2 = require('../../vec2.js');
-
-const fs = require('fs');
+import { vec2 } from '../../vec2.js';
+import fs from 'fs';
+import { Grid } from '../../MapGrid.js';
 
 /*
 position=<-3,  6> velocity=< 2, -1>
@@ -60,6 +59,7 @@ function puzzle1() {
     time++;
   }
   best.dump();
+  console.log('puzzle 1:', best.ocr());
   return time;
 }
 
