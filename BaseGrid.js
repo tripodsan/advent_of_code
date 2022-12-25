@@ -15,7 +15,7 @@
  * limitations under the License.
  *
  */
-import { rangedCounter } from './utils.js';
+import { ocr, rangedCounter } from './utils.js';
 import { Heap } from 'heap-js';
 
 export class BaseGrid {
@@ -190,6 +190,23 @@ export class BaseGrid {
       }
       console.log(row.join(''));
     }
+  }
+
+  ocr() {
+    const lines = [];
+    for (let y = this.min[1]; y <= this.max[1]; y++) {
+      const row = [];
+      lines.push(row);
+      for (let x = this.min[0]; x <= this.max[0]; x++) {
+        const cell = this.get([x, y]);
+        if (cell) {
+          row.push('#');
+        } else {
+          row.push('.');
+        }
+      }
+    }
+    return ocr(lines);
   }
 
   /**
