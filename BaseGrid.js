@@ -176,7 +176,7 @@ export class BaseGrid {
       for (let x = this.min[0]; x <= this.max[0]; x++) {
         if (pos && pos[0] === x && pos[1] === y) {
           row.push('[');
-          delim = sep;
+          delim = ']';
         } else {
           row.push(delim);
           delim = sep;
@@ -188,6 +188,7 @@ export class BaseGrid {
           row.push(draw ? draw(null, [x, y]) : '.');
         }
       }
+      row.push(delim);
       console.log(row.join(''));
     }
   }
