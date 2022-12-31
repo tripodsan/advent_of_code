@@ -98,5 +98,5 @@ function puzzle2() {
   return prog.reg.a;
 }
 
-console.log('puzzle 1: ', puzzle1());
-console.log('puzzle 2: ', puzzle2());
+console.log('puzzle 1: ', puzzle1()); // 12654
+console.log('puzzle 2: ', puzzle2()); // 479009214
