@@ -31,6 +31,61 @@ export function permute(rest, prefix = []) {
   );
 }
 
+/**
+ * generator that creates permutations of `a`
+ * copied from https://github.com/nodash/steinhaus-johnson-trotter
+ * @param a
+ */
+export function *permutations(a) {
+  const N = a.length;
+  const directions = Array(N).fill(-1);
+  const indices = Array.init(N, (i) => i);
+  directions[0] = 0;
+
+  function swap(i, j) {
+    let tmp = indices[i];
+    indices[i] = indices[j];
+    indices[j] = tmp;
+
+    tmp = directions[i];
+    directions[i] = directions[j];
+    directions[j] = tmp;
+  }
+
+  function result() {
+    return indices.map((i) => a[i]);
+  }
+
+  yield result();
+
+  while (true) {
+    let maxIndex = directions.findIndex((d) => d);
+    if (maxIndex === -1) {
+      return;
+    }
+    for (let i = maxIndex + 1; i < N; i += 1) {
+      if (directions[i] !== 0 && indices[i] > indices[maxIndex]) {
+        maxIndex = i;
+      }
+    }
+    let moveTo = maxIndex + directions[maxIndex];
+    swap(maxIndex, moveTo);
+    if (moveTo === 0 || moveTo === N - 1 || indices[moveTo + directions[moveTo]] > indices[moveTo]) {
+      directions[moveTo] = 0;
+    }
+    for (let i = 0; i < N; i += 1) {
+      if (indices[i] > indices[moveTo]) {
+        if (i < moveTo) {
+          directions[i] = 1;
+        } else {
+          directions[i] = -1;
+        }
+      }
+    }
+    yield result();
+  }
+}
+
 export function ggt(a, b) {
   for (;;) {
     const d = a - b;
