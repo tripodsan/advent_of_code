@@ -1,6 +1,5 @@
-const { Grid } = require('../../utils.js');
+import fs from 'fs';
 
-const fs = require('fs');
 const data = fs.readFileSync('./input.txt', 'utf-8')
   .trim()
   .split('');
@@ -36,5 +35,5 @@ function puzzle1() {
   return floor;
 }
 
-console.log('puzzle 1: ', puzzle1());
-console.log('puzzle 2: ', puzzle2());
+console.log('puzzle 1: ', puzzle1()); // 280
+console.log('puzzle 2: ', puzzle2()); // 1797
