@@ -22,7 +22,9 @@ function distanceMap() {
 
 function brute(dist, max) {
   const keys = [...dist.keys()];
-  let best = max ? 0 : Number.MAX_SAFE_INTEGER;
+  let best = max
+    ? 0
+    : Number.MAX_SAFE_INTEGER;
   for (const path of permutations(keys)) {
     let prev;
     let sum = 0;
