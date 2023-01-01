@@ -1,6 +1,6 @@
 import fs from 'fs';
 import { Grid } from '../../MapGrid.js';
-import { permute } from '../../utils.js';
+import { permutations } from '../../utils.js';
 
 const TEST = false;
 
@@ -71,7 +71,7 @@ function brute(dist) {
   keys.shift(); // remove start
   let best1 = Number.MAX_SAFE_INTEGER;
   let best2 = Number.MAX_SAFE_INTEGER;
-  for (const path of permute(keys)) {
+  for (const path of permutations(keys)) {
     let prev = 0;
     let sum = 0;
     for (const pos of path) {
