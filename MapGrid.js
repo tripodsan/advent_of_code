@@ -70,7 +70,7 @@ export class Grid extends BaseGrid {
       };
       this._m.set(key, d);
     } else if (up) {
-      d = up(d);
+      d = up(d) ?? d;
     }
     return d;
   }
