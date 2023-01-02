@@ -1,5 +1,5 @@
 import fs from 'fs';
-import { counter } from '../../utils.js';
+import '../../utils.js';
 
 const TEST = false;
 
@@ -26,14 +26,24 @@ function parse() {
   return d;
 }
 
+function *counter(max, digits) {
+  if (digits === 2) {
+    for (let i = 0; i <= max; i++) {
+      yield [i, max - i];
+    }
+    return;
+  }
+  for (let i = 0; i <= max; i++) {
+    for (const d of counter(max - i, digits - 1)) {
+      yield [i, ...d];
+    }
+  }
+}
+
 function solve(limitCalories) {
   const d = parse();
-  const digits = Array.init(100, (i) => i);
   let best = 0;
-  for (const amounts of counter(digits, d.length)) {
-    if (amounts.sum() !== 100) {
-      continue;
-    }
+  for (const amounts of counter(100, d.length)) {
     const scores = [0, 0, 0, 0, 0];
     for (let j = 0; j < d.length; j++) {
       for (let i = 0; i < 5; i++) {
@@ -45,12 +55,10 @@ function solve(limitCalories) {
       continue;
     }
     const score = scores.reduce((s, e) => s * Math.max(0, e), 1);
-
     if (score > best) {
       best = score;
-      console.log(amounts, scores);
+      // console.log(amounts, scores);
     }
-    best = Math.max(best, score);
   }
   return best;
 }
@@ -64,4 +72,4 @@ function puzzle2() {
 }
 
 console.log('puzzle 1: ', puzzle1()); // 13882464
-console.log('puzzle 2: ', puzzle2()); // 1256
+console.log('puzzle 2: ', puzzle2()); // 11171160
