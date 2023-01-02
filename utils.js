@@ -336,6 +336,10 @@ Array.prototype.sum = function() {
   return this.reduce((s, e) => s + e, 0);
 }
 
+Array.prototype.prod = function() {
+  return this.reduce((s, e) => s * e, 1);
+}
+
 Array.prototype.max = function() {
   return this.reduce((p, e, idx) => {
     if (e > p.max) {
