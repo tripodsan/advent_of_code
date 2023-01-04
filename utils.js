@@ -86,6 +86,36 @@ export function *permutations(a) {
   }
 }
 
+export function *primes(max) {
+  const len = Math.sqrt(max);
+  const prime = new Array(max + 1).fill(true);
+  for (let i = 2; i <= max; i++) {
+    if (prime[i] === true) {
+      yield i;
+      if (i < len) {
+        for (let j = i * 2; j <= max; j += i) {
+          // Mark its multiples non-prime
+          prime[j] = false;
+        }
+      }
+    }
+  }
+}
+
+function factorize(n, ps) {
+  if (!ps) {
+    ps = primes(n);
+  }
+  const factors = [];
+  for (const p of ps) {
+    while (n % p === 0) {
+      factors.push(p);
+      n /= p;
+    }
+  }
+  return factors;
+}
+
 export function ggt(a, b) {
   for (;;) {
     const d = a - b;
