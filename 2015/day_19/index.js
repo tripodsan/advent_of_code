@@ -59,5 +59,5 @@ function puzzle2() {
   return num;
 }
 
-console.log('puzzle 1: ', puzzle1()); // 768
-console.log('puzzle 2: ', puzzle2()); // 781
+console.log('puzzle 1: ', puzzle1()); // 576
+console.log('puzzle 2: ', puzzle2()); // 207
