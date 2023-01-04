@@ -37,5 +37,5 @@ function puzzle2() {
 
 }
 
-console.log('puzzle 1: ', puzzle1()); // to high 2206678
-console.log('puzzle 2: ', puzzle2());
+console.log('puzzle 1: ', puzzle1()); // 776160
+console.log('puzzle 2: ', puzzle2()); // 786240
