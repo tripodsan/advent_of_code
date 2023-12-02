@@ -10,7 +10,7 @@ struct Game {
 fn load_data()->Vec<Game> {
     // Game 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green
     let re1 = Regex::new(r"Game (\d+):(.+)").unwrap();
-    let content = std::fs::read_to_string("day_02/input_test.txt").expect("could not read file");
+    let content = std::fs::read_to_string("day_02/input.txt").expect("could not read file");
     let lines:Vec<_> = content.trim().lines().collect();
     let mut games:Vec<Game> = Vec::new();
     for line in lines {
@@ -44,7 +44,12 @@ fn load_data()->Vec<Game> {
 
 fn puzzle1() {
     let games = load_data();
-    println!("puzzle 1: {:?}", games);
+    let fix = UVec3::new(12, 13, 14);
+    let sum = games.iter()
+        .filter(|game| game.samples.iter()
+            .all(|pt| pt.x <= fix.x && pt.y <= fix.y && pt.z <= fix.z))
+        .fold(0, |acc, game| game.id + acc);
+    println!("puzzle 1: {:?}", sum);
 }
 
 fn puzzle2() {
