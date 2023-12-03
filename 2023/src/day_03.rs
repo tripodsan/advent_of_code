@@ -2,6 +2,9 @@ use std::collections::HashSet;
 use glam::{UVec3};
 use regex::Regex;
 
+// const INPUT: &str = r"day_03/input_test.txt";
+const INPUT: &str = r"day_03/input.txt";
+
 #[derive(Debug)]
 struct Part {
   x0: i32,
@@ -25,7 +28,7 @@ struct Engine {
 }
 
 fn load_data() -> Engine {
-  let content = std::fs::read_to_string("day_03/input_test.txt").expect("could not read file");
+  let content = std::fs::read_to_string(INPUT).expect("could not read file");
   let lines: Vec<_> = content.trim().lines().collect();
   let mut engine = Engine {
     parts_by_y: Vec::new(),
@@ -63,6 +66,11 @@ fn load_data() -> Engine {
         }
       }
     }
+    if id > 0 {
+      parts_by_y.push(engine.parts.len());
+      engine.parts.push(Part { x0, x1, y: y as i32, id });
+      id = 0;
+    }
     engine.parts_by_y.push(parts_by_y);
   }
   engine
@@ -86,23 +94,38 @@ fn puzzle1() {
     for d in DIRECTIONS {
       let x = s.x + d[0];
       let y = s.y + d[1];
-      println!("{} {} {}", s.c, x, y);
-      if let Some(i) = engine.parts_by_y[y as usize].iter().find(|p| {
-        println!("{:?}", engine.parts[**p]);
-        engine.parts[**p].x0 >= x && x <= engine.parts[**p].x1
+      if let Some(i) = engine.parts_by_y[y as usize].iter().find(|&&p| {
+        engine.parts[p].x0 <= x && x <= engine.parts[p].x1
       }) {
-        println!("insert {:?}", i);
         adj.insert(i);
       }
     }
   }
-  println!("{:?}", engine.parts);
-  let sum = adj.iter().fold(0, |acc, i| acc + engine.parts[**i].id);
-  println!("puzzle 1: {:?} {}", adj, sum);
+  // println!("{:?}", engine.parts);
+  let sum = adj.iter().fold(0, |acc, &&i| acc + engine.parts[i].id);
+  println!("puzzle 1: {}", sum);
 }
 
 fn puzzle2() {
-  let sum = 1;
+  let engine = load_data();
+  let mut sum = 0;
+  for s in engine.symbols {
+    if s.c == '*' {
+      let mut adj = HashSet::new();
+      for d in DIRECTIONS {
+        let x = s.x + d[0];
+        let y = s.y + d[1];
+        if let Some(i) = engine.parts_by_y[y as usize].iter().find(|&&p| {
+          engine.parts[p].x0 <= x && x <= engine.parts[p].x1
+        }) {
+          adj.insert(i);
+        }
+      }
+      if adj.len() == 2 {
+        sum += adj.iter().fold(1, |acc, &&i| acc * engine.parts[i].id);
+      }
+    }
+  }
   println!("puzzle 2: {}", sum);
 }
 
