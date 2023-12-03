@@ -1,3 +1,4 @@
+use std::collections::HashSet;
 use glam::{UVec3};
 use regex::Regex;
 
@@ -80,15 +81,24 @@ const DIRECTIONS: [[i32; 2]; 8] = [
 
 fn puzzle1() {
   let engine = load_data();
-  let mut sum = 0;
+  let mut adj = HashSet::new();
   for s in engine.symbols {
     for d in DIRECTIONS {
       let x = s.x + d[0];
       let y = s.y + d[1];
-      
+      println!("{} {} {}", s.c, x, y);
+      if let Some(i) = engine.parts_by_y[y as usize].iter().find(|p| {
+        println!("{:?}", engine.parts[**p]);
+        engine.parts[**p].x0 >= x && x <= engine.parts[**p].x1
+      }) {
+        println!("insert {:?}", i);
+        adj.insert(i);
+      }
     }
   }
-  println!("puzzle 1: {:?}", sum);
+  println!("{:?}", engine.parts);
+  let sum = adj.iter().fold(0, |acc, i| acc + engine.parts[**i].id);
+  println!("puzzle 1: {:?} {}", adj, sum);
 }
 
 fn puzzle2() {
