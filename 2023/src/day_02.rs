@@ -59,6 +59,7 @@ fn puzzle2() {
   println!("puzzle 2: {}", sum);
 }
 
+#[allow(dead_code)]
 pub fn run() {
   puzzle1();
   puzzle2();
