@@ -25,9 +25,13 @@ struct Engine {
 }
 
 impl Engine {
-  fn add(part:Part) {
-    self.parts_by_y.push(engine.parts.len());
-    engine.parts.push(Part { x0, x1, id });
+  fn add(&mut self, y:usize, part:Part) -> Part {
+    while self.parts_by_y.len() <= y {
+      self.parts_by_y.push(Vec::new())
+    }
+    self.parts_by_y[y].push(self.parts.len());
+    self.parts.push(part);
+    Part { x0:0, x1:0, id:0 }
   }
 }
 
@@ -40,41 +44,32 @@ fn load_data() -> Engine {
     symbols: Vec::new(),
   };
   for (y, line) in lines.iter().enumerate() {
-    let mut x0:i32 = 0;
-    let mut x1:i32 = 0;
-    let mut id = 0;
-    let mut parts_by_y = Vec::new();
+    let mut part = Part { x0:0, x1:0, id:0 };
     for (x, c) in line.chars().enumerate() {
       match c {
         '0'..='9' => {
-          if id == 0 {
-            x0 = x as i32;
+          if part.id == 0 {
+            part.x0 = x as i32;
           }
-          x1 = x as i32;
-          id = id * 10 + c.to_digit(10).unwrap();
+          part.x1 = x as i32;
+          part.id = part.id * 10 + c.to_digit(10).unwrap();
         },
         '.' => {
-          if id > 0 {
-            parts_by_y.push(engine.parts.len());
-            engine.parts.push(Part { x0, x1, id });
-            id = 0;
+          if part.id > 0 {
+            part = engine.add(y, part);
           }
         },
         _ => {
           engine.symbols.push(Symbol { x: x as i32, y: y as i32, c });
-          if id > 0 {
-            parts_by_y.push(engine.parts.len());
-            engine.parts.push(Part { x0, x1, id });
-            id = 0;
+          if part.id > 0 {
+            part = engine.add(y, part);
           }
         }
       }
     }
-    if id > 0 {
-      parts_by_y.push(engine.parts.len());
-      engine.parts.push(Part { x0, x1, id });
+    if part.id > 0 {
+      engine.add(y, part);
     }
-    engine.parts_by_y.push(parts_by_y);
   }
   engine
 }
