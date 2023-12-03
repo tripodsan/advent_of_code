@@ -1,6 +1,4 @@
 use std::collections::HashSet;
-use glam::{UVec3};
-use regex::Regex;
 
 // const INPUT: &str = r"day_03/input_test.txt";
 const INPUT: &str = r"day_03/input.txt";
@@ -9,7 +7,6 @@ const INPUT: &str = r"day_03/input.txt";
 struct Part {
   x0: i32,
   x1: i32,
-  y: i32,
   id: u32,
 }
 
@@ -25,6 +22,13 @@ struct Engine {
   parts_by_y: Vec<Vec<usize>>,
   parts: Vec<Part>,
   symbols: Vec<Symbol>,
+}
+
+impl Engine {
+  fn add(part:Part) {
+    self.parts_by_y.push(engine.parts.len());
+    engine.parts.push(Part { x0, x1, id });
+  }
 }
 
 fn load_data() -> Engine {
@@ -52,7 +56,7 @@ fn load_data() -> Engine {
         '.' => {
           if id > 0 {
             parts_by_y.push(engine.parts.len());
-            engine.parts.push(Part { x0, x1, y: y as i32, id });
+            engine.parts.push(Part { x0, x1, id });
             id = 0;
           }
         },
@@ -60,7 +64,7 @@ fn load_data() -> Engine {
           engine.symbols.push(Symbol { x: x as i32, y: y as i32, c });
           if id > 0 {
             parts_by_y.push(engine.parts.len());
-            engine.parts.push(Part { x0, x1, y: y as i32, id });
+            engine.parts.push(Part { x0, x1, id });
             id = 0;
           }
         }
@@ -68,8 +72,7 @@ fn load_data() -> Engine {
     }
     if id > 0 {
       parts_by_y.push(engine.parts.len());
-      engine.parts.push(Part { x0, x1, y: y as i32, id });
-      id = 0;
+      engine.parts.push(Part { x0, x1, id });
     }
     engine.parts_by_y.push(parts_by_y);
   }
