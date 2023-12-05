@@ -1,8 +1,8 @@
 use std::cmp;
-use std::collections::{HashMap, HashSet};
+use std::collections::{HashMap};
 
-const INPUT: &str = r"day_05/input_test.txt";
-// const INPUT: &str = r"day_05/input.txt";
+// const INPUT: &str = r"day_05/input_test.txt";
+const INPUT: &str = r"day_05/input.txt";
 #[derive(Debug)]
 struct Puzzle {
   seeds:Vec<i64>,
@@ -10,12 +10,16 @@ struct Puzzle {
 }
 
 impl Puzzle {
-  pub(crate) fn transpose(&self, seed_range: &Vec<SeedRange>) {
-    todo!()
+  pub(crate) fn transpose(&self, seed_range: Vec<SeedRange>)->Vec<SeedRange> {
+    let mut typ = "seed";
+    let mut res:Vec<SeedRange> = seed_range;
+    while let Some(mapping) = self.maps.get(typ) {
+      typ = mapping.dst.as_str();
+      res = mapping.transpose(res);
+    }
+    return res;
   }
-}
 
-impl Puzzle {
   pub(crate) fn resolve(&self, seed: i64) -> i64 {
     let mut typ = "seed";
     let mut val = seed;
@@ -28,6 +32,7 @@ impl Puzzle {
 }
 
 #[derive(Debug)]
+#[derive(PartialEq)]
 struct Range {
   a0: i64,
   a1: i64,
@@ -35,8 +40,7 @@ struct Range {
 }
 
 #[derive(Debug)]
-struct Mapping {
-  src:String,
+struct Mapping<> {
   dst:String,
   ranges:Vec<Range>,
 }
@@ -49,6 +53,53 @@ impl Mapping {
       }
     }
     val
+  }
+
+  fn find(&self, val: i64) -> Option<&Range> {
+    for r in self.ranges.iter() {
+      if val >= r.a0 && val < r.a1 {
+        return Some(r);
+      }
+    }
+    None
+  }
+
+  pub(crate) fn transpose(&self, seed_range: Vec<SeedRange>) -> Vec<SeedRange> {
+    let mut res:Vec<SeedRange> = vec![];
+    for r in seed_range {
+      if let Some(r0) = self.find(r.a0) {
+        if let Some(r1) = self.find(r.a1) {
+          // if both are in the same range, just map both ends to the destination
+          if r0 == r1 {
+            res.push(SeedRange {
+              a0: r.a0 + r0.d,
+              a1: r.a1 + r1.d,
+            });
+          } else {
+            // create lower half of new range
+            res.push(SeedRange {
+              a0: r.a0 + r0.d,
+              a1: r0.a1 + r0.d,
+            });
+            // create upper half of new range
+            res.push(SeedRange {
+              a0: r1.a0 + r1.d,
+              a1: r.a1 + r1.d,
+            });
+          }
+        } else {
+          // if the upper end is beyond the last range, just map the seed range
+          res.push(SeedRange {
+            a0: r.a0 + r0.d,
+            a1: r.a1 + r0.d,
+          });
+        }
+      } else {
+        // not mapped range - reuse seed range
+        res.push(r);
+      }
+    }
+    return res;
   }
 }
 
@@ -69,7 +120,8 @@ fn load_data() -> Puzzle {
     let title = lines.remove(0);
     let (src, dst) = title.trim().split_once(' ').unwrap();
     let mut ranges = Vec::new();
-    while let mp = lines.remove(0) {
+    loop {
+      let mp = lines.remove(0);
       if mp.len() == 0 {
         break
       }
@@ -86,12 +138,11 @@ fn load_data() -> Puzzle {
     // sort ranges and insert identity mappings if needed
     ranges.sort_by(|a,b| a.a0.cmp(&b.a0));
     let mut i = 0;
-    while (i < ranges.len() - 1) {
+    while i < ranges.len() - 1 {
       let r0 = &ranges[i];
       let r1 = &ranges[i+1];
-      if (r0.a1 != r1.a0) {
+      if r0.a1 != r1.a0 {
         // insert identity range
-        println!("insert: {}, {}", r0.a1, r1.a0);
         ranges.insert(i + 1, Range {
           a0: r0.a1,
           a1: r1.a0,
@@ -103,7 +154,6 @@ fn load_data() -> Puzzle {
       }
     }
     puz.maps.insert(src.to_string(), Mapping {
-      src: src.to_string(),
       dst: dst.to_string(),
       ranges
     });
@@ -123,6 +173,7 @@ fn puzzle1() {
 
 
 #[derive(Debug)]
+#[derive(Copy, Clone)]
 struct SeedRange {
   a0: i64,
   a1: i64,
@@ -136,10 +187,9 @@ fn puzzle2() {
       a1: puz.seeds[i] + puz.seeds[i + 1],
     });
   }
-  puz.transpose(&ranges);
-  println!("ranges: {:?}", ranges);
-  // let mut puz = load_data();
-  // println!("puzzle 2: {}", sum);
+  ranges = puz.transpose(ranges);
+  ranges.sort_by(|a, b| a.a0.cmp(&b.a0));
+  println!("puzzle 2: {}", ranges[0].a0);
 }
 
 #[allow(dead_code)]
