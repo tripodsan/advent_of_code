@@ -3,11 +3,13 @@ mod day_02;
 mod day_03;
 mod day_04;
 mod day_05;
+mod day_06;
 
 fn main() {
   // day_01::run();
   // day_02::run();
   // day_03::run();
   // day_04::run();
-  day_05::run();
+  // day_05::run();
+  day_06::run();
 }
