@@ -25,9 +25,9 @@ const INPUT: [(f64, f64); 4] = [(42.0, 308.0), (89.0, 1170.0), (91.0, 1291.0), (
 fn ways(t:f64, d:f64) -> u64 {
   let s = (t*t - 4.0*d).sqrt();
   let x0 = ((t + s) / 2.0).ceil() as u64 - 1;
-  let x1 = ((t - s) / 2.0) as u64;
-  // println!("t:{}, d:{}. x0:{}, x1:{}", t,d,x0,x1);
-  x0 - x1
+  let x1 = ((t - s) / 2.0) as u64 + 1;
+  // println!("t:{}, d:{}. x0:{}, x1:{}", t, d, x0, x1);
+  x0 - x1 + 1
 }
 
 fn puzzle1() {
