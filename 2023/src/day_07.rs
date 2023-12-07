@@ -53,11 +53,7 @@ fn load_data(joker:bool) -> Vec<Hand> {
       })
     }
   }
-  hands
-}
-
-fn solve(joker:bool)->u64 {
-  let mut hands = load_data(joker);
+  // sort by hand value and card value
   hands.sort_by(|a, b| {
     let c = a.value.cmp(&b.value);
     if c.is_eq() {
@@ -65,6 +61,11 @@ fn solve(joker:bool)->u64 {
     }
     return c;
   });
+  hands
+}
+
+fn solve(joker:bool)->u64 {
+  let hands = load_data(joker);
   hands.iter().enumerate().fold(0, |acc, (pos, hand)| {
     // println!("{} {:?}", pos, hand);
     acc + (pos + 1) as u64 * hand.bid
