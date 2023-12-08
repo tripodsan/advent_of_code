@@ -3,7 +3,7 @@ const INPUT: &str = r"day_07/input.txt";
 #[derive(Debug)]
 struct Hand {
   // A, K, Q, J, T, 9, 8, 7, 6, 5, 4, 3, or 2 -> 12...0
-  hand:String,
+  _hand:String,
   cards:[u8; 5],
   value:u8,
   bid:u64,
@@ -46,7 +46,7 @@ fn load_data(joker:bool) -> Vec<Hand> {
         _ => 0, // high card
       };
       hands.push(Hand {
-        hand: hand.to_string(),
+        _hand: hand.to_string(),
         cards,
         value,
         bid: bid.parse().unwrap(),
