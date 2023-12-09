@@ -33,7 +33,7 @@ fn load_data() -> Result<Map, Error> {
     dirs: line.trim().chars().map(|c| if c == 'L' { 0 } else { 1 }).collect(),
     nodes: HashMap::new(),
   };
-  reader.read_line(&mut line)?; // skip
+  reader.read_line(&mut line).ok(); // skip
 
   // AAA = (BBB, BBB)
   let r = Regex::new(r"(\w+) = \((\w+), (\w+)\)\s*").unwrap();
