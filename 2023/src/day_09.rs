@@ -19,26 +19,21 @@ fn load_data() -> Vec<Vec<i64>> {
 }
 
 fn extrapolate(seq: &Vec<i64>, rev:bool) -> i64 {
-  let mut der:Vec<i64> = vec![];
+  let mut deltas:Vec<i64> = vec![];
   let mut last:i64 = 0;
   let mut zero:bool = true;
+  let mut prev:i64 = 0;
   for i in 0..seq.len() - 1 {
     last = seq[i + 1];
-    let diff = last - seq[i];
-    if diff != 0 {
+    let delta = last - seq[i];
+    if i > 0 && delta != prev {
       zero = false
     }
-    der.push(diff);
+    prev = delta;
+    deltas.push(delta);
   }
-  if zero {
-    return if rev {seq[0] } else { last };
-  }
-  let next = extrapolate(&der, rev);
-  if rev {
-    seq[0] - next
-  } else {
-    last + next
-  }
+  let next = if zero { prev } else { extrapolate(&deltas, rev) };
+  if rev { seq[0] - next } else { last + next }
 }
 
 fn puzzle1() {
@@ -55,6 +50,6 @@ fn puzzle2() {
 
 #[allow(dead_code)]
 pub fn run() {
-  puzzle1();
-  puzzle2();
+  puzzle1(); // 1853145119
+  puzzle2(); // 923
 }
