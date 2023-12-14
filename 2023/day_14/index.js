@@ -60,7 +60,7 @@ function dump() {
   }
 }
 
-dump();
+// dump();
 
 function tilt(a, d) {
   // for each column, move the rocks to the north or south
