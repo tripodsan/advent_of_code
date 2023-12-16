@@ -110,6 +110,15 @@ export class BaseGrid {
     }
   }
 
+  inside(v) {
+    for (let p = 0; p < v.length; p ++) {
+      if (v[p] < this.min[p] || v[p] > this.max[p]) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   span(dim) {
     return this.max[dim] - this.min[dim] + 1;
   }
