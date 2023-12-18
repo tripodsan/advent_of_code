@@ -359,7 +359,7 @@ export class BaseGrid {
       for (const n of this.neighboursV(v)) {
         if (n[0] >= min[0] && n[0] <= max[0]
           && n[1] >= min[1] && n[1] <= max[1]
-          && n[2] >= min[2] && n[2] <= max[2]
+          // && n[2] >= min[2] && n[2] <= max[2]
           && cond(this.get(n))) {
           stack.push(n);
         }
