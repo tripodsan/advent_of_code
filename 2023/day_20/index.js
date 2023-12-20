@@ -24,6 +24,7 @@ function parse() {
     mod.children = mod.children.map((c) => {
       let child = modules[c];
       if (!child) {
+        // pure output module
         child = modules[c] = {
           name: c,
           type: '?',
@@ -38,20 +39,6 @@ function parse() {
       return child;
     });
   }
-
-  // order them
-  const stack = [modules['roadcaster']];
-  let index = 0;
-  while (stack.length) {
-    const mod = stack.shift();
-    mod.index = index++;
-    for (const child of mod.children) {
-      if (child.index === undefined) {
-        stack.push(child);
-      }
-    }
-  }
-
   return modules;
 }
 
@@ -80,6 +67,10 @@ function propagate(signals, stats) {
       // When a pulse is received, the conjunction module first updates its memory for that input.
       // Then, if it remembers high pulses for all inputs, it sends a low pulse; otherwise, it sends a high pulse.
       mod.state[parent] = pulse;
+
+      // this is for part II to detect if an input changed to high during a cycle.
+      // apparently the puzzle in constructed in a way so that all 4 inputs go high during the same
+      // propagation cycle (because after the cycle is finished, the states are low again).
       if (mod.sticky && pulse) {
         mod.sticky[parent] = 1;
       }
@@ -108,41 +99,24 @@ function puzzle1() {
   const root = modules['roadcaster'];
   for (let i = 0; i < 1000; i++) {
     push(root, stats)
-    // console.log('------------------');
   }
-  // console.log(stats);
   return stats[0] * stats[1];
-}
-
-function dump_graph(sorted) {
-  console.log('---------------------------- nodes')
-  console.log('Id,Label');
-  for (const mod of sorted) {
-    console.log(`${mod.index},${mod.type}${mod.name}`)
-  }
-  console.log('---------------------------- edges')
-  console.log('Source,Target,Type,Id');
-  let edgeId = 0;
-  for (const mod of sorted) {
-    for (const child of mod.children) {
-      console.log(`${mod.index},${child.index},Directed,${edgeId++}`);
-    }
-  }
 }
 
 function puzzle2() {
   const modules = parse();
   const stats = [0, 0];
   const root = modules['roadcaster'];
-  const rx = modules['rx'];
 
   // my puzzle input has 4 distinct circuits that end in &kj, the parent of rx. when all 4 are high,
   // then rx will receive a low. we count the periodicity of input
+  const rx = modules['rx'];
   const kj = rx.parents[0];
+
   const highs = new Map();
   let i = 0;
   let p = 1;
-  while (highs.size !== 4) {
+  while (highs.size !== kj.parents.length) {
     i += 1;
     kj.sticky = {};
     push(root, stats);
