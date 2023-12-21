@@ -37,6 +37,7 @@ export class BaseGrid {
     this.dim = dim;
     this.min = new Array(dim).fill(Number.MAX_SAFE_INTEGER);
     this.max = new Array(dim).fill(Number.MIN_SAFE_INTEGER);
+    this.length = new Array(dim).fill(Number.MIN_SAFE_INTEGER);
   }
 
   init(str, fn) {
@@ -107,7 +108,20 @@ export class BaseGrid {
     for (let p = 0; p < v.length; p ++) {
       this.min[p] = Math.min(this.min[p], v[p]);
       this.max[p] = Math.max(this.max[p], v[p]);
+      this.length[p] = this.max[p] - this.min[p] + 1;
     }
+  }
+
+  mod(v) {
+    const ret = new Array(this.dim);
+    for (let p = 0; p < this.dim; p ++) {
+      let a = v[p] % this.length[p];
+      if (a < 0) {
+        a += this.length[p];
+      }
+      ret[p] = a;
+    }
+    return ret;
   }
 
   inside(v) {
@@ -177,7 +191,7 @@ export class BaseGrid {
     return s;
   }
 
-  dump(pos, draw) {
+  dump(pos, draw, out = console.log) {
     const sep = pos === undefined ? '' : ' ';
     for (let y = this.min[1]; y <= this.max[1]; y++) {
       const row = [];
@@ -198,7 +212,7 @@ export class BaseGrid {
         }
       }
       row.push(delim);
-      console.log(row.join(''));
+      out(row.join(''));
     }
   }
 
