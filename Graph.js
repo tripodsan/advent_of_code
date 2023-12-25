@@ -29,6 +29,14 @@ export class Graph {
     return e;
   }
 
+  getOrAddNode(id, data = {}) {
+    let n = this.nodes.get(id);
+    if (!n) {
+      return this.addNode(id, data);
+    }
+    return n;
+  }
+
   addNode(id, data = {}) {
     const n = {
       id,
@@ -72,5 +80,16 @@ export class Graph {
       }
     }
     return longest;
+  }
+
+  moveConnected(n0, g1) {
+    if (this.nodes.has(n0.id)) {
+      this.nodes.delete(n0.id);
+      g1.nodes.set(n0.id, n0);
+      for (const e of n0.out) {
+        // todo: move edges
+        this.moveConnected(e.n1, g1);
+      }
+    }
   }
 }
