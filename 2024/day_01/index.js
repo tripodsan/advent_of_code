@@ -1,34 +1,51 @@
 import fs from 'fs';
 import chalk from 'chalk-template';
 
-const data = [[], []];
-
-for (const line of fs.readFileSync('./input.txt', 'utf-8')
+const data = fs.readFileSync('./input.txt', 'utf-8')
   .split('\n')
   .map((s)=> s.trim())
-  .filter((s) => !!s)) {
-  const [a, b] = line.split(/\s+/).map((s) => parseInt(s, 10));
-  data[0].push(a)
-  data[1].push(b)
+  .filter((s) => !!s)
+  .map((line) => line.split(/\s+/).map((s) => parseInt(s, 10)));
+
+console.log(data);
+
+function test(report) {
+  const slope = Math.sign(report[1] - report[0])
+  for (let i = 1; i < report.length; i++) {
+    const d = report[i] - report[i - 1];
+    const l = Math.abs(d);
+    if (l < 1 || l > 3) {
+      return 0;
+    }
+    if (Math.sign(d) !== slope) {
+      return 0;
+    }
+  }
+  return 1;
 }
-// console.log(data);
 
 function puzzle1() {
-  let sum = 0;
-  data[0].sort((a, b) => a - b);
-  data[1].sort((a, b) => a - b);
-  for (let i = 0; i < data[0].length; i++) {
-    sum += Math.abs(data[0][i] - data[1][i]);
-  }
-  return sum;
+  return data.reduce((acc, cur) => acc + test(cur), 0)
 }
+
 function puzzle2() {
-  let sum = 0;
-  for (const n of data[0]) {
-    const count = data[1].reduce((p ,v) => (v === n ? p + 1 : p), 0);
-    sum += count * n;
+  let num = 0;
+  for (const report of data) {
+    const safe = test(report);
+    if (safe) {
+      num += 1;
+    } else {
+      for (let i = 0; i < report.length; i++) {
+        const damp = Array.from(report);
+        damp.splice(i, 1);
+        if (test(damp)) {
+          num += 1;
+          break;
+        }
+      }
+    }
   }
-  return sum;
+  return num;
 }
 
 console.log('puzzle 1: ', puzzle1());
