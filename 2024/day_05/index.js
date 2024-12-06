@@ -38,9 +38,33 @@ function puzzle1() {
   return sum;
 }
 
-function puzzle2() {
-  return 0;
+function fix(update) {
+  let fixed = false;
+  while (!fixed) {
+    fixed = true;
+    for (const [r0, r1] of rules) {
+      const idx0 = update.indexOf(r0);
+      const idx1 = update.indexOf(r1);
+      if (idx0 >= 0 && idx1 >= 0 && idx0 >= idx1) {
+        const t = update[idx0];
+        update[idx0] = update[idx1];
+        update[idx1] = t;
+        fixed = false;
+      }
+    }
+  }
 }
 
-console.log('puzzle 1: ', puzzle1());
+function puzzle2() {
+  let sum = 0;
+  for (const update of updates) {
+    if (!valid_update(update)) {
+      fix(update);
+      sum += update[Math.floor(update.length / 2)];
+    }
+  }
+  return sum;
+}
+
+console.log('puzzle 1: ', puzzle1()); //5166
 console.log('puzzle 2: ', puzzle2());
