@@ -156,7 +156,7 @@ export class BaseGrid {
 
   *scan() {
     const min = [...this.min];
-    const max = [...this.max];
+    const max = [...this.max].map((n) => n + 1);
     for (const v of rangedCounter(min, max)) {
       yield v;
     }
