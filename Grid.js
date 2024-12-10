@@ -49,7 +49,7 @@ export class Grid extends BaseGrid {
     return this._g[this.key(v)];
   }
 
-  getOrSet(v, fn, up) {
+  getOrSet(v, fn = () => ({}), up) {
     const key = this.key(v);
     let d = this._g[key];
     if (!d) {

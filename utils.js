@@ -32,6 +32,30 @@ export function permute(rest, prefix = []) {
 }
 
 /**
+ * Generator that creates pairs of elements in a
+ * @param a
+ * @param directed
+ * @returns {Generator<*, void, *>}
+ */
+export function *pairs(a, directed = false) {
+  if (directed) {
+    for (let i = 0; i < a.length; i++) {
+      for (let j = 0; j < a.length; j++) {
+        if (i !== j) {
+          yield [a[i], a[j]];
+        }
+      }
+    }
+  } else {
+    for (let i = 0; i < a.length - 1; i++) {
+      for (let j = i; j < a.length; j++) {
+        yield [a[i], a[j]];
+      }
+    }
+  }
+}
+
+/**
  * generator that creates permutations of `a`
  * copied from https://github.com/nodash/steinhaus-johnson-trotter
  * @param a

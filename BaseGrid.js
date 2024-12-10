@@ -206,7 +206,7 @@ export class BaseGrid {
         }
         const cell = this.get([x, y]);
         if (cell) {
-          row.push(draw ? draw(cell, [x, y]) : '#');
+          row.push(draw ? draw(cell, [x, y]) : cell.c ?? '#');
         } else {
           row.push(draw ? draw(null, [x, y]) : '.');
         }
