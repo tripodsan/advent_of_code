@@ -162,6 +162,12 @@ export class BaseGrid {
     }
   }
 
+  /**
+   * returns the vectors in axis order. eg for 2 dimensions:
+   * [1, 0], [-1, 0], [0, 1], [0, -1]
+   * @param pos
+   * @returns {Generator<*[], void, *>}
+   */
   *neighboursV(pos) {
     const SIGN = [1, -1];
     for (let d = 0; d < this.dim; d++) {
