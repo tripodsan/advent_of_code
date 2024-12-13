@@ -1,6 +1,4 @@
 import fs from 'fs';
-import chalk from 'chalk-template';
-import { Grid } from '../../Grid.js';
 import { vec2 } from '../../vec2.js';
 
 /*
@@ -24,7 +22,7 @@ function parse() {
   const arcades = [];
   for (let m of fs.readFileSync('./input.txt', 'utf-8').trim().split('\n\n')) {
     const [,a0, a1, b0, b1, x, y] = m.split(/[^\d]+/sg).map((s) => parseInt(s, 10));
-    console.log(a0, a1, b0, b1, x, y);
+    // console.log(a0, a1, b0, b1, x, y);
     arcades.push({
       mat: [[a0, b0], [a1, b1]],
       target: [x, y],
@@ -33,22 +31,16 @@ function parse() {
   return arcades;
 }
 
-function isInteger(n) {
-  return Math.abs(Math.round(n) - n) < 0.0001;
-}
-
 function solve({mat, target}) {
-  // console.log('----------------------------------')
-  // console.log(mat)
-  const inv = vec2.inv(mat);
-  // console.log(inv)
+  const inv = [[0,0], [0,0]];
+  const det = vec2.invDet(inv, mat);
   const n = vec2.matrixMult([], inv, target);
-  if (isInteger(n[0]) && isInteger(n[1])) {
-    const price =  Math.round(n[0]) * 3 + Math.round(n[1]);
-    console.log(price);
+  // console.log(n, det, n[0]%det, n[1]%det);
+  if (n[0]%det === 0 && n[1]%det === 0) {
+    const price =  (n[0] * 3 + n[1]) / det;
+    // console.log(price);
     return price;
   }
-  console.log(n);
   return 0;
 }
 
@@ -67,5 +59,5 @@ function puzzle2() {
   }).reduce((acc, arc) => acc + solve(arc), 0);
 }
 
-console.log('puzzle 1: ', puzzle1())
-console.log('puzzle 2: ', puzzle2());
+console.log('puzzle 1: ', puzzle1())  // 35574
+console.log('puzzle 2: ', puzzle2()); // 80882098756071
