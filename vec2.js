@@ -559,3 +559,16 @@ vec2.equals = function(v0, v1) {
   }
   return v0[0] === v1[0] && v0[1] === v1[1];
 }
+
+vec2.inv = function (matrix) {
+  const mat = [
+    [matrix[1][1], -matrix[0][1]],
+    [-matrix[1][0], matrix[0][0]],
+  ];
+  const det = (mat[0][0] * mat[1][1]) - (mat[0][1] * mat[1][0]);
+  mat[0][0] /= det;
+  mat[0][1] /= det;
+  mat[1][0] /= det;
+  mat[1][1] /= det;
+  return mat;
+}
