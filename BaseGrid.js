@@ -40,7 +40,7 @@ export class BaseGrid {
     this.length = new Array(dim).fill(Number.MIN_SAFE_INTEGER);
   }
 
-  init(str, fn) {
+  init(str, fn = (x,y,c) => c) {
     str
       .split('\n')
       .map((s) => s.trim())
