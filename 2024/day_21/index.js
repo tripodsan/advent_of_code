@@ -7,7 +7,7 @@ import { HSVtoRGB } from '../../utils.js';
 import * as path from 'node:path';
 
 
-const data = fs.readFileSync('./input_test.txt', 'utf-8')
+const data = fs.readFileSync('./input.txt', 'utf-8')
   .split('\n')
   .map((c) => c.trim())
   .filter((c) => !!c);
@@ -92,105 +92,96 @@ for (const [k,v] of Object.entries(NUM_PAD)) {
   NUM_PAD_R[v] = k;
 }
 
-/**
- * returns the code (dir + steps * 4) to get from p0 to p1
- * @param from
- * @param to
- */
-function dir_code(ret, p0, p1) {
-  const x0 = p0 % 4;
-  const y0 = p0 >> 2;
-  const x1 = p1 % 4;
-  const y1 = p1 >> 2;
-  const dx = x1 - x0;
-  const dy = y1 - y0;
-  const cx = dx > 0 ? (dx * 4 + 0): dx < 0 ? (-dx * 4 + 2) : 0;  // left, right
-  const cy = dy > 0 ? (dy * 4 + 1): dy < 0 ? (-dy * 4 + 3) : 0; // down, up
-  // for the num pad, if starting from 0 or A, we need to travel Y first
-  // for the dir pad, if starting from ^ or A, we need to travel Y first
-  if (cx === 0 && cy === 0) {
-    // do nothing
-  } else if (cx === 0) {
-    ret.push(cy)
-  } else if (cy === 0) {
-    ret.push(cx)
-  } else {
-    if (!(y0 === 3 && x1 === 0)) {
-      ret.push(cx);
-      ret.push(cy);
-    } else if (!(y1 === 3 && x0 === 0)) {
-      ret.push(cy);
-      ret.push(cx);
-    } else {
-      throw Error();
+function expand(a0, a1) {
+  if (a1.length === 0) {
+    // nothing to do
+  } else if (a1.length === 1) {
+    // number of paths remain
+    for (const a of a0) {
+      path.push(...a1[0])
     }
+  } else {
+    // duplicate paths
+    const new_paths = [];
+    for (const path of paths) {
+      new_paths.push([...path, ...a1[1]])
+      path.push(...a1[0])
+    }
+    a0 = a0.concat(new_paths);
   }
-  return ret;
+  return a0;
 }
 
-function get_path(codes) {
-  const ret = [];
-  let p = NUM_PAD.A;
+function get_paths(lookup, start, codes) {
+  let paths = [[]];
+  let p = start;
   for (const c of codes) {
-    ret.push(...NUM_PAD_LOOKUP[p][c])
-    ret.push(0);
+    const m = NUM_PAD_LOOKUP[p][c]; // possible moves
+    if (m.length === 0) {
+      // nothing to do
+    } else if (m.length === 1) {
+      // number of paths remain
+      for (const path of paths) {
+        path.push(...m[0])
+      }
+    } else {
+      // duplicate paths
+      const new_paths = [];
+      for (const path of paths) {
+        new_paths.push([...path, ...m[1]])
+        path.push(...m[0])
+      }
+      paths = paths.concat(new_paths);
+    }
+    for (const path of paths) {
+      path.push(0); // press A
+    }
     p = c;
   }
-  return ret;
+  return paths;
 }
-
 /**
  * returns the direction codes for the path
- * @param path
+ * @param codes
  */
-function get_dir_codes(path) {
-  const ret = [];
+function get_dir_paths(codes) {
+  let paths = [[]];
   let last = DIR_PAD[4];
-  for (const p of path) {
+  for (const p of codes) {
     const d = p % 4;
     let n = p >> 2;
+    let code = DIR_PAD[4];
     if (n === 0) {
-      dir_code(ret, last, DIR_PAD[4]);
-      ret.push(0);
-      last = DIR_PAD[4];
+      // move to A
+      n = 1;
     } else {
-      const code = DIR_PAD[d];
-      dir_code(ret, last, code);
-      while (n) {
-        ret.push(0);
-        n -= 1;
-      }
-      last = code;
+      code = DIR_PAD[d];
     }
-  }
-  return ret;
-}
-
-/**
- * returns the direction codes for the path
- * @param path
- */
-function get_dir_codes_lookup(path) {
-  const ret = [];
-  let last = DIR_PAD[4];
-  for (const p of path) {
-    const d = p % 4;
-    let n = p >> 2;
-    if (n === 0) {
-      ret.push(...DIR_PAD_LOOKUP[last][DIR_PAD[4]])
-      ret.push(0);
-      last = DIR_PAD[4];
+    const ms = DIR_PAD_LOOKUP[last][code];
+    if (ms.length === 0) {
+      // do nothing
+    } else if (ms.length === 1) {
+      for (const path of paths) {
+        path.push(...ms[0]);
+      }
     } else {
-      const code = DIR_PAD[d];
-      ret.push(...DIR_PAD_LOOKUP[last][code])
-      while (n) {
-        ret.push(0);
-        n -= 1;
+      // duplicate paths
+      const new_paths = [];
+      for (const path of paths) {
+        new_paths.push([...path, ...ms[1]])
+        path.push(...ms[0])
       }
-      last = code;
+      paths = paths.concat(new_paths);
     }
+    // press A
+    const a = new Array(n);
+    a.fill(0);
+    for (const path of paths) {
+      path.push(...a)
+    }
+    last = code;
   }
-  return ret;
+  return paths;
 }
 
 function toString(path) {
@@ -260,19 +251,7 @@ function analyze_pad() {
           solutions.push([cy, cx]);
         }
       }
-
-
-      let best = [];
-      let best_length = Infinity;
-      for (const s of solutions) {
-        const c1 = get_dir_codes(s);
-        if (calc_length(c1) < best_length) {
-          best_length = calc_length(c1);
-          best = s;
-        }
-      }
-      // console.log(d0, d1, toString(best));
-      row[p1] = best;
+      row[p1] = solutions;
     }
   }
   return lookup;
@@ -314,20 +293,7 @@ function analyze_dir() {
           solutions.push([cy, cx]);
         }
       }
-
-
-      let best = [];
-      let best_length = Infinity;
-      for (const s of solutions) {
-        const c1 = get_dir_codes(s);
-        // console.log(DIRS[i], DIRS[j], toString(s), toString(c1));
-        if (calc_length(c1) < best_length) {
-          best_length = calc_length(c1);
-          best = s;
-        }
-      }
-      // console.log(DIRS[i], DIRS[j], p0, p1, toString(best));
-      row[p1] = best;
+      row[p1] = solutions;
     }
   }
   return lookup;
@@ -336,26 +302,50 @@ function analyze_dir() {
 const NUM_PAD_LOOKUP = analyze_pad();
 const DIR_PAD_LOOKUP = analyze_dir();
 
-function puzzle1() {
+
+const mem = new Map();
+
+function get_best(paths, depth) {
+  let best = Infinity;
+  let best_path;
+
+  for (const path of paths) {
+    const key = toString(path) + depth;
+    console.log(key);
+    let n;
+    if (mem.has(key)) {
+      n = mem.get(key);
+    } else {
+      n = depth === 0
+        ? path
+        : get_best(get_dir_paths(path), depth - 1);
+      mem.set(key, n);
+    }
+    const len = calc_length(n);
+    // console.log('  '.repeat(depth), toString(n), len);
+    if (len < best) {
+      best = len;
+      best_path = n;
+    }
+  }
+  if (!best_path) {
+    throw Error();
+  }
+  return best_path;
+}
+
+function puzzle1(max) {
   let score = 0;
   for (const keys of data) {
     // map keys to internal representation
     console.log(keys);
-    const codes = keys.split('').map((k) => NUM_PAD[k]);
-    const p0 = get_path(codes);
-    console.log(toString(p0));
-    const c0 = get_dir_codes_lookup(p0);
-    console.log(toString(c0));
-    const c1 = get_dir_codes_lookup(c0);
-    console.log(toString(c1));
-    console.log(check(toString(c1)));
     const n = parseInt(keys.substring(0, keys.length - 1), 10);
-    const l = calc_length(c1);
-    console.log(l, n);
-    score += l * n;
-    // const c2 = get_dir_codes(c1);
-    // dump(c2);
-    // console.log(c1.length);
+    const codes = keys.split('').map((k) => NUM_PAD[k]);
+    const paths = get_paths(NUM_PAD_LOOKUP, NUM_PAD.A, codes);
+    const best = get_best(paths, max);
+    const len = calc_length(best);
+    console.log(toString(best), len);
+    score += len * n;
   }
   return score;
 }
@@ -363,8 +353,8 @@ function puzzle1() {
 function puzzle2() {
 }
 
-console.log('puzzle 1:', puzzle1()); // 289060 285840
-console.log('puzzle 2:', puzzle2());
+console.log('puzzle 1:', puzzle1(2)); // 278748
+console.log('puzzle 2:', puzzle1(3));
 
 function reverse(path) {
   let s = '';
