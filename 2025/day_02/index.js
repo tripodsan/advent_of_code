@@ -11,7 +11,8 @@ const data = fs.readFileSync('./input.txt', 'utf-8')
     return [Number.parseInt(low), Number.parseInt(high)];
   });
 
-console.log(data);
+data.sort((a, b) => a[0] - b[0]);
+// console.log(data);
 
 /*
      1 -    9 *    11 =       11 -       99
@@ -19,43 +20,62 @@ console.log(data);
    100 -  999 *  1001 =   100100 -   999999
   1000 - 9999 * 10001 = 10001000 - 99999999
  */
-const segments = []
+const segments1 = [];
+const segments2 = [];
 for (let p = 1; p <8; p += 1) {
   const f = Math.pow(10, p) + 1;
-  segments.push({
+  const lo = Math.pow(10, p - 1);
+  const hi = (Math.pow(10, p) - 1);
+  const s = {
     f,
-    lo: Math.pow(10, p - 1) * f,
-    hi: (Math.pow(10, p) - 1) * f,
-  })
+    lo: lo * f,
+    hi: hi * f,
+  };
+  segments1.push(s)
+  segments2.push(s);
+  let l = f;
+  while (true) {
+    l = l * Math.pow(10, p) + 1;
+    if (l > Number.MAX_SAFE_INTEGER) {
+      break;
+    }
+    segments2.push({
+      f: l,
+      lo: lo * l,
+      hi: hi * l,
+    });
+  }
+
+}
+
+function solve(segments) {
+  let sum = 0;
+  const seen = new Set();
+  for (const [lo, hi] of data) {
+    for (const s of segments) {
+      let l = Math.ceil(lo / s.f) * s.f;
+      l = Math.max(l, s.lo);
+      while (l <= hi && l <= s.hi) {
+        if (!seen.has(l)) {
+          seen.add(l);
+          // console.log(l);
+          sum += l
+        }
+        l += s.f;
+      }
+    }
+  }
+  return sum;
+
 }
 
 function puzzle1() {
-  let total = 0;
-  for (const [lo, hi] of data) {
-    console.log('-----%d %d----', lo, hi)
-    let segNr = Math.floor(Math.floor(Math.log10(lo))/2);
-    let s = segments[segNr];
-    let l = lo;
-    while (l <= hi) {
-      // find the highest multiple of s.f that is equal or lower than hi
-      let h = Math.min(hi, s.hi)
-      const ml = Math.ceil(l / s.f);
-      const mh = Math.floor(h / s.f);
-      total += sum(ml, mh) * s.f;
-      console.log(l, h, s, ml, mh, sum(ml, mh));
-      for (let i = ml; i <= mh; i += 1) {
-        console.log(i * s.f);
-      }
-      segNr += 1;
-      s = segments[segNr];
-      l = s.lo;
-    }
-  }
-  return total;
+  return solve(segments1);
 }
 
 function puzzle2() {
+  return solve(segments2);
 }
-// test 1: 1227775554
-console.log('puzzle 1: ', puzzle1()); // 995
-console.log('puzzle 2: ', puzzle2()); // 5847
+
+console.log('puzzle 1: ', puzzle1()); // 29818212493
+console.log('puzzle 2: ', puzzle2()); // 37432260594
