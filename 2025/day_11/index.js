@@ -13,7 +13,7 @@ function parse(input) {
       const rack = {
         id,
         ports,
-        paths: [],
+        paths: 0,
         from: [],
       }
       racks.set(id, rack);
@@ -21,7 +21,7 @@ function parse(input) {
   racks.set('out', {
     id: 'out',
     ports: [],
-    paths: [],
+    paths: 0,
     from: [],
   })
   // connect reverse
@@ -34,14 +34,40 @@ function parse(input) {
   return racks;
 }
 
+function prune(racks, ex) {
+  let removed = true;
+  while (removed) {
+    removed = false;
+    for (const id of racks.keys()) {
+      const r = racks.get(id);
+      if (r.ports.length === 0 && id !== ex) {
+        // irrelevant leaf node
+        removed = true;
+        racks.delete(id);
+        for (const port of r.from) {
+          const src = racks.get(port);
+          if (src) {
+            src.ports.splice(src.ports.indexOf(id), 1);
+          }
+        }
+      }
+    }
+  }
+}
+
 function solve(input, start, end) {
   const racks = parse(input);
+  prune(racks, end);
+  if (!racks.has(start) || !racks.has(end)) {
+    return 0;
+  }
   const q = new Heap((e0, e1) => e0.d - e1.d);
   q.push(racks.get(start));
   while (!q.isEmpty()) {
     const from = q.pop();
     for (const port of from.ports) {
       const dst = racks.get(port);
+      if (!dst) throw Error('missing ' + port)
       dst.paths += 1;
       if (dst.id !== end) {
         q.push(dst);
@@ -51,74 +77,18 @@ function solve(input, start, end) {
   return racks.get(end).paths;
 }
 
-function solve2(input, start, end) {
-  const racks = parse(input);
-  const q = new Heap((e0, e1) => e0.d - e1.d);
-  q.push({
-    rack: racks.get(start),
-    path: [start],
-  });
-  while (!q.isEmpty()) {
-    const p = q.pop();
-    const { rack } = p;
-    if (rack.ports.length === 0) {
-      // leaf node
-      rack.paths.push(p);
-      continue;
-    }
-    if (rack.paths.length === 0) {
-      // if a rack was not visited yet create new paths for each port
-      for (let i = 0; i < rack.ports.length; i++) {
-        const port = rack.ports[i];
-        let pp = p;
-        if (i > 0) {
-          // create new path by cloning the existing one
-          pp = {
-            path: [...p.paths, port],
-          }
-        }
-        pp.rack = racks.get(port);
-        p.push(pp);
-        rack.paths.push(pp);
-      }
-    } else {
-      // a new path reached this rack, so add the paths we accumulated
-      for (const path of rack.paths) {
-        rack.paths.numPaths += p.numPaths;
-      }
-    }
-  }
-  console.log(racks);
-  return racks.get(end).paths;
-}
-
-function reverse(input, start, end) {
-  const racks = parse(input);
-  const q = new Heap((e0, e1) => e0.d - e1.d);
-  q.push(racks.get(end));
-  while (!q.isEmpty()) {
-    const dst = q.pop();
-    for (const port of dst.from) {
-      const src = racks.get(port);
-      src.paths += 1;
-      q.push(src);
-    }
-  }
-  return racks.get(start).paths;
-}
-
 function puzzle1(input) {
-  return solve2(input, 'you', 'out');
+  return solve(input, 'you', 'out');
 }
 
 function puzzle2(input) {
-  console.log(reverse(input, 'svr', 'fft')); // svr -> fft: 11315
-  console.log(solve(input, 'dac', 'fft')); // dac -> fft: 0
-  console.log(solve(input, 'fft', 'dac')); // fft -> dac: 0
+  let p0, p1, p2, p3;
+  console.log(p0 = solve(input, 'svr', 'fft')); // svr -> fft: 11315
+  console.log(p1 = solve(input, 'dac', 'fft')); // dac -> fft: 0
+  console.log(p2 = solve(input, 'fft', 'dac')); // fft -> dac: 4099825
+  console.log(p3 = solve(input, 'dac', 'out')); // fft -> dac: 8281
+  return p0 * p2 * p3;
 }
 
-
-console.log('puzzle 1: ', puzzle1('./input_test.txt')); // 470
-
-// console.log('puzzle 2: ', puzzle2('./input_test2.txt'));
-// console.log('puzzle 2: ', puzzle2('./input.txt'));
+console.log('puzzle 1: ', puzzle1('./input.txt')); // 470
+console.log('puzzle 2: ', puzzle2('./input.txt'));
