@@ -13,8 +13,7 @@ function parse(input) {
       const rack = {
         id,
         ports,
-        paths: 0,
-        routes: [],
+        paths: [],
         from: [],
       }
       racks.set(id, rack);
@@ -22,8 +21,7 @@ function parse(input) {
   racks.set('out', {
     id: 'out',
     ports: [],
-    paths: 0,
-    routes: [],
+    paths: [],
     from: [],
   })
   // connect reverse
@@ -56,19 +54,41 @@ function solve(input, start, end) {
 function solve2(input, start, end) {
   const racks = parse(input);
   const q = new Heap((e0, e1) => e0.d - e1.d);
-  q.push(racks.get(start));
+  q.push({
+    rack: racks.get(start),
+    path: [start],
+  });
   while (!q.isEmpty()) {
-    const from = q.pop();
-    for (const port of from.ports) {
-      const dst = racks.get(port);
-      for 
-
-      if (!dst.visited) {
-        dst.visited = true;
-        q.push(dst);
+    const p = q.pop();
+    const { rack } = p;
+    if (rack.ports.length === 0) {
+      // leaf node
+      rack.paths.push(p);
+      continue;
+    }
+    if (rack.paths.length === 0) {
+      // if a rack was not visited yet create new paths for each port
+      for (let i = 0; i < rack.ports.length; i++) {
+        const port = rack.ports[i];
+        let pp = p;
+        if (i > 0) {
+          // create new path by cloning the existing one
+          pp = {
+            path: [...p.paths, port],
+          }
+        }
+        pp.rack = racks.get(port);
+        p.push(pp);
+        rack.paths.push(pp);
+      }
+    } else {
+      // a new path reached this rack, so add the paths we accumulated
+      for (const path of rack.paths) {
+        rack.paths.numPaths += p.numPaths;
       }
     }
   }
+  console.log(racks);
   return racks.get(end).paths;
 }
 
@@ -98,7 +118,7 @@ function puzzle2(input) {
 }
 
 
-console.log('puzzle 1: ', puzzle1('./input.txt')); // 470
+console.log('puzzle 1: ', puzzle1('./input_test.txt')); // 470
 
 // console.log('puzzle 2: ', puzzle2('./input_test2.txt'));
 // console.log('puzzle 2: ', puzzle2('./input.txt'));

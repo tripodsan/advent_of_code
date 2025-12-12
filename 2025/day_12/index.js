@@ -35,19 +35,30 @@ for (const ch of chunks) {
 
 function puzzle1() {
   let ok = 0;
+  let problems = 0;
+  let nok = 0;
   for (const r of regions) {
     // calculate min size
     const min = r.p.reduce((acc, v, idx) => acc + v * shapes[idx].size, 0);
+    // max size (if all presents would be arranged in a 3x3 grid)
+    const max = r.p.reduce((acc, v) => acc + v * 9, 0);
     if (min > r.w*r.h) {
       // console.log('too small:', r, r.w*r.h, min);
-    } else {
+      nok += 1;
+    } else if (max <= r.w*r.h) {
       ok += 1;
+    } else {
+      problems += 1;
     }
   }
+  console.log('total puzzles: ', regions.length);
+  console.log('      trivial: ', ok);
+  console.log('   impossible: ', nok);
+  console.log('  problematic: ', problems);
+  console.log('---------------');
+
   return ok;
 }
-
-console.log('num regions:',regions.length);
 
 
 console.log('puzzle 1: ', puzzle1());
